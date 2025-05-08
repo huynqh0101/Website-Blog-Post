@@ -10,7 +10,7 @@ import {
 } from "./ui/navigation-menu";
 import { Button } from "./ui/button";
 import MobileMenu from "./MobileMenu";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeContext } from "@/context/themeContext";
 import { useContext, useState, useEffect } from "react";
 import { FaNewspaper } from "react-icons/fa";
@@ -20,6 +20,7 @@ import { navigationItems } from "@/constants/navigation";
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const { isDarkMode, toggleTheme }: any = useContext(ThemeContext);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -47,6 +48,14 @@ const Navbar = () => {
               : "text-slate-600 hover:text-primary after:scale-x-0"
           }`
     }`;
+  };
+
+  const handleSignIn = () => {
+    router.push("/login");
+  };
+
+  const handleSignUp = () => {
+    router.push("/signup");
   };
 
   return (
@@ -186,6 +195,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-3">
             <Button
               variant="ghost"
+              onClick={handleSignIn}
               className={`group flex items-center justify-center space-x-2 font-medium w-[120px] overflow-hidden
               tracking-normal hover:tracking-wider transition-all duration-300 ${
                 isDarkMode
@@ -204,6 +214,7 @@ const Navbar = () => {
             </Button>
             <Button
               variant="default"
+              onClick={handleSignUp}
               className={`font-medium w-[120px] overflow-hidden text-center
               tracking-normal hover:tracking-wider transition-all duration-300 ${
                 isDarkMode

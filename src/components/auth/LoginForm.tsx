@@ -15,7 +15,15 @@ export default function LoginForm() {
     e.preventDefault();
     setLoading(true);
     // Add your login logic here
-    setTimeout(() => setLoading(false), 2000);
+    setTimeout(() => {
+      setLoading(false);
+      // Navigate to dashboard after successful login
+      router.push("/dashboard");
+    }, 2000);
+  };
+
+  const handleSignUp = () => {
+    router.push("/signup");
   };
 
   return (
@@ -38,7 +46,7 @@ export default function LoginForm() {
               className="pl-10"
             />
           </div>
-          
+
           <div className="relative">
             <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
             <Input
@@ -75,25 +83,19 @@ export default function LoginForm() {
           </div>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={loading}
-        >
-          {loading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : null}
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Sign in
         </Button>
 
         <p className="text-center text-sm text-gray-600">
           Don't have an account?{" "}
-          <Link
-            href="/signup"
+          <button
+            onClick={handleSignUp}
             className="font-medium text-primary hover:text-primary/80"
           >
             Sign up
-          </Link>
+          </button>
         </p>
       </form>
     </div>

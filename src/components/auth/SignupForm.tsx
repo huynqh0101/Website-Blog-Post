@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/authContext";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,16 +14,19 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
+  role: "author" | "user";
 }
 
 export default function SignupForm() {
   const router = useRouter();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
+    role: "user", // Default role
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,28 +47,90 @@ export default function SignupForm() {
 
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:1337/api/auth/local/register",
-        {
+      if (formData.role === "user") {
+        const response = await fetch(
+          "http://localhost:1337/api/auth/local/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: formData.username,
+              email: formData.email,
+              password: formData.password,
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error?.message || "Something went wrong");
+        }
+
+        login(data.jwt, {
+          id: data.user.id,
+          username: data.user.username,
+          email: data.user.email,
+          role: "user",
+        });
+      } else {
+        const response = await fetch("http://localhost:1337/api/authors", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: formData.username,
-            email: formData.email,
-            password: formData.password,
+            data: {
+              name: formData.username,
+              email: formData.email,
+              password: formData.password,
+              avatar: 1, // Default avatar ID
+            },
           }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (data.error?.message?.includes("username")) {
+            throw new Error("Username is already taken");
+          } else if (data.error?.message?.includes("email")) {
+            throw new Error("Email is already registered");
+          }
+          throw new Error(data.error?.message || "Registration failed");
         }
-      );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || "Something went wrong");
+        const userResponse = await fetch(
+          "http://localhost:1337/api/auth/local/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: formData.username,
+              email: formData.email,
+              password: formData.password,
+            }),
+          }
+        );
+        const userData = await userResponse.json();
+        if (!userResponse.ok) {
+          throw new Error(
+            userData.error?.message || "User registration failed"
+          );
+        }
+        // Assuming the author API returns similar structure as user registration
+        login(userData.jwt, {
+          id: data.data.id, // ID của author entry
+          username: formData.username,
+          email: formData.email,
+          role: "author",
+        });
       }
-
-      toast.success("Registration successful!");
+      toast.success(`Registration successful as ${formData.role}!`);
       router.push("/");
     } catch (error) {
       toast.error(
@@ -138,6 +204,44 @@ export default function SignupForm() {
               value={formData.confirmPassword}
               onChange={handleChange}
             />
+          </div>
+
+          <div className="flex justify-center space-x-8 py-2">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="user"
+                name="role"
+                value="user"
+                checked={formData.role === "user"}
+                onChange={handleChange}
+                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary"
+              />
+              <label
+                htmlFor="user"
+                className="ml-2 text-sm font-medium text-gray-600"
+              >
+                Register as User
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="author"
+                name="role"
+                value="author"
+                checked={formData.role === "author"}
+                onChange={handleChange}
+                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary"
+              />
+              <label
+                htmlFor="author"
+                className="ml-2 text-sm font-medium text-gray-600"
+              >
+                Register as Author
+              </label>
+            </div>
           </div>
         </div>
 

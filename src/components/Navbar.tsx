@@ -17,6 +17,7 @@ import { FaNewspaper } from "react-icons/fa";
 import { Search, User, Moon, Sun } from "lucide-react";
 import useScrollHandling from "@/hooks/useScrollHandling";
 import { navigationItems } from "@/constants/navigation";
+import { useAuth } from "@/context/authContext";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -25,6 +26,7 @@ const Navbar = () => {
   const { isDarkMode, toggleTheme }: any = useContext(ThemeContext);
   const [isScrolled, setIsScrolled] = useState(false);
   const { scrollPosition } = useScrollHandling();
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => {
     setIsScrolled(scrollPosition > 80);
@@ -56,6 +58,11 @@ const Navbar = () => {
 
   const handleSignUp = () => {
     router.push("/signup");
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
   };
 
   return (
@@ -193,37 +200,63 @@ const Navbar = () => {
           </button>
 
           <div className="flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              onClick={handleSignIn}
-              className={`group flex items-center justify-center space-x-2 font-medium w-[120px] overflow-hidden
-              tracking-normal hover:tracking-wider transition-all duration-300 ${
-                isDarkMode
-                  ? "text-slate-400 hover:text-white hover:bg-slate-800"
-                  : "text-slate-600 hover:text-primary hover:bg-slate-100"
-              }`}
-            >
-              <User
-                className={`h-5 w-5 flex-shrink-0 transition-colors duration-300 ${
-                  isDarkMode
-                    ? "group-hover:text-white"
-                    : "group-hover:text-primary"
-                }`}
-              />
-              <span className="text-center">Sign in</span>
-            </Button>
-            <Button
-              variant="default"
-              onClick={handleSignUp}
-              className={`font-medium w-[120px] overflow-hidden text-center
-              tracking-normal hover:tracking-wider transition-all duration-300 ${
-                isDarkMode
-                  ? "bg-white text-slate-900 hover:bg-slate-200 hover:shadow-white/10"
-                  : "bg-primary text-white hover:bg-primary/90"
-              } shadow-sm hover:shadow-md`}
-            >
-              Sign up
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className={`group flex items-center justify-center space-x-2 font-medium w-[120px] overflow-hidden
+                       tracking-normal hover:tracking-wider transition-all duration-300 ${
+                         isDarkMode
+                           ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                           : "text-slate-600 hover:text-primary hover:bg-slate-100"
+                       }`}
+              >
+                <User
+                  className={`h-5 w-5 flex-shrink-0 transition-colors duration-300 ${
+                    isDarkMode
+                      ? "group-hover:text-white"
+                      : "group-hover:text-primary"
+                  }`}
+                />
+                <span className="text-center">
+                  {user?.username || "Logout"}
+                </span>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={handleSignIn}
+                  className={`group flex items-center justify-center space-x-2 font-medium w-[120px] overflow-hidden
+                  tracking-normal hover:tracking-wider transition-all duration-300 ${
+                    isDarkMode
+                      ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                      : "text-slate-600 hover:text-primary hover:bg-slate-100"
+                  }`}
+                >
+                  <User
+                    className={`h-5 w-5 flex-shrink-0 transition-colors duration-300 ${
+                      isDarkMode
+                        ? "group-hover:text-white"
+                        : "group-hover:text-primary"
+                    }`}
+                  />
+                  <span className="text-center">Sign in</span>
+                </Button>
+                <Button
+                  variant="default"
+                  onClick={handleSignUp}
+                  className={`font-medium w-[120px] overflow-hidden text-center
+                  tracking-normal hover:tracking-wider transition-all duration-300 ${
+                    isDarkMode
+                      ? "bg-white text-slate-900 hover:bg-slate-200 hover:shadow-white/10"
+                      : "bg-primary text-white hover:bg-primary/90"
+                  } shadow-sm hover:shadow-md`}
+                >
+                  Sign up
+                </Button>
+              </>
+            )}
           </div>
         </div>
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/authContext";
 
 interface LoginFormData {
   identifier: string;
@@ -15,11 +16,21 @@ interface LoginFormData {
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
     identifier: "",
     password: "",
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+      router.push("/"); // Redirect to home if already logged in
+    }
+  }, [router]);
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,9 +62,7 @@ export default function LoginForm() {
         throw new Error(data.error?.message || "Login failed");
       }
 
-      // Save token to localStorage or other state management
-      localStorage.setItem("token", data.jwt);
-
+      login(data.jwt, data.user);
       toast.success("Login successful!");
       router.push("/");
     } catch (error) {
@@ -66,6 +75,11 @@ export default function LoginForm() {
   const handleSignUp = () => {
     router.push("/signup");
   };
+
+  // Return early if already authenticated
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black px-10 py-1 ">

@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/context/themeContext";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
           <Navbar />
           <main className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {children}
+            <Toaster/>
           </main>
           <Footer />
         </ThemeProvider>

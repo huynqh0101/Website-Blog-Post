@@ -18,7 +18,7 @@ import { Search, User, Moon, Sun } from "lucide-react";
 import useScrollHandling from "@/hooks/useScrollHandling";
 import { navigationItems } from "@/constants/navigation";
 import { useAuth } from "@/context/authContext";
-
+import UserAvatarDropdown from "./userAvatarDropdown";
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
@@ -62,7 +62,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    router.push("/login");
+    router.push("/");
   };
 
   return (
@@ -201,27 +201,11 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-3">
             {isAuthenticated ? (
-              <Button
-                variant="ghost"
-                onClick={handleLogout}
-                className={`group flex items-center justify-center space-x-2 font-medium w-[120px] overflow-hidden
-                       tracking-normal hover:tracking-wider transition-all duration-300 ${
-                         isDarkMode
-                           ? "text-slate-400 hover:text-white hover:bg-slate-800"
-                           : "text-slate-600 hover:text-primary hover:bg-slate-100"
-                       }`}
-              >
-                <User
-                  className={`h-5 w-5 flex-shrink-0 transition-colors duration-300 ${
-                    isDarkMode
-                      ? "group-hover:text-white"
-                      : "group-hover:text-primary"
-                  }`}
-                />
-                <span className="text-center">
-                  {user?.username || "Logout"}
-                </span>
-              </Button>
+              <UserAvatarDropdown
+                username={user?.username || "User"}
+                onLogout={handleLogout}
+                isDarkMode={isDarkMode}
+              />
             ) : (
               <>
                 <Button

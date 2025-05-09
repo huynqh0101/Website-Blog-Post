@@ -1,22 +1,32 @@
 export const navigationItems = [
   {
+    name: "Home",
+    href: "/",
+  },
+  {
+    name: "About",
+    href: "/about",
+  },
+  {
     name: "News",
-    href: "/news",
     dropdownItems: [
       { name: "Latest News", href: "/news/latest" },
+      { name: "Featured", href: "/news/featured" },
       { name: "Popular", href: "/news/popular" },
-      { name: "Trending", href: "/news/trending" },
+      { name: "Categories", href: "/news/categories" },
     ],
   },
   {
     name: "Services",
-    href: "/services",
     dropdownItems: [
-      { name: "Web Development", href: "/services/web-development" },
-      { name: "Mobile Apps", href: "/services/mobile-apps" },
-      { name: "SEO", href: "/services/seo" },
+      { name: "Content Writing", href: "/services/writing" },
+      { name: "Editing", href: "/services/editing" },
+      { name: "Publishing", href: "/services/publishing" },
+      { name: "Consulting", href: "/services/consulting" },
     ],
   },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
+  {
+    name: "Contact",
+    href: "/contact",
+  },
 ];

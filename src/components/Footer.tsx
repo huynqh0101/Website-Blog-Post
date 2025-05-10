@@ -1,126 +1,173 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
-  AiOutlineTwitter,
-  AiOutlineInstagram,
-  AiOutlineGithub,
-  AiFillLinkedin,
-  AiFillFacebook,
-} from "react-icons/ai";
-import { MdEmail, MdLocationOn, MdPhone } from "react-icons/md";
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaYoutube,
+  FaPinterest,
+} from "react-icons/fa";
+const Footer = (): JSX.Element => {
+  const companyLinks = [
+    { title: "About Us", href: "#" },
+    { title: "The Test Kitchen", href: "#" },
+    { title: "Podcast", href: "#" },
+    { title: "Events", href: "#" },
+    { title: "Jobs", href: "#" },
+  ];
 
-const Footer = () => {
+  const helpLinks = [
+    { title: "Contact & Faq", href: "#" },
+    { title: "Oders & Returns", href: "#" },
+    { title: "Gift Cards", href: "#" },
+    { title: "Register", href: "#" },
+    { title: "Catalog", href: "#" },
+  ];
+
+  const exploreLinks = [
+    { title: "The Shop", href: "#" },
+    { title: "Recipes", href: "#" },
+    { title: "Food", href: "#" },
+    { title: "Travel", href: "#" },
+    { title: "Hotline", href: "#" },
+  ];
+
+  const socialLinks = [
+    { title: "Facebook", href: "#", icon: <FaFacebook className="w-5 h-5" /> },
+    { title: "Twitter", href: "#", icon: <FaTwitter className="w-5 h-5" /> },
+    {
+      title: "Instagram",
+      href: "#",
+      icon: <FaInstagram className="w-5 h-5" />,
+    },
+    { title: "Youtube", href: "#", icon: <FaYoutube className="w-5 h-5" /> },
+    {
+      title: "Pinterest",
+      href: "#",
+      icon: <FaPinterest className="w-5 h-5" />,
+    },
+  ];
   return (
-    <footer className="bg-gray-100 dark:bg-gray-800 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Company Info */}
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-              📰 Daily News
-            </h2>
-            <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-              Delivering the latest and most relevant news to your doorstep.
+    <footer className="w-full bg-transparent py-24">
+      <div className="container mx-auto px-4 md:px-8 lg:px-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          {/* Logo and description column */}
+          <div className="flex flex-col space-y-5">
+            <div className="w-[171px] h-[50px] bg-[url(/logo-png.png)] bg-cover bg-[50%_50%]" />
+            <p className="text-[#545e69] text-base leading-7">
+              Browned Butter And Brown Sugar
+              <br />
+              caramelly Goodness, Crispy Edges
+              <br />
+              thick And Soft Centers And Melty
+              <br />
+              little Puddles Of Chocolate.
             </p>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                <MdLocationOn className="text-base" />
-                <span>123 News Street, City</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                <MdPhone className="text-base" />
-                <span>+1 234 567 890</span>
-              </div>
-            </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold tracking-wide uppercase text-gray-800 dark:text-gray-200">
-              Quick Links
-            </h3>
-            <ul className="space-y-1.5">
-              {["About Us", "Services", "News", "Contact"].map((item) => (
-                <li key={item}>
+          {/* Company column */}
+          <div className="flex flex-col space-y-4">
+            <div className="space-y-2">
+              <h3 className="font-extrabold [font-family:'Manrope',Helvetica] text-[#183354] text-xl leading-6">
+                Company
+              </h3>
+              <img
+                className="w-8 h-[5px]"
+                alt="Mask group"
+                src="/mask-group-5.svg"
+              />
+            </div>
+            <ul className="space-y-3">
+              {companyLinks.map((link, index) => (
+                <li key={index}>
                   <a
-                    href={`/${item.toLowerCase().replace(" ", "-")}`}
-                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary transition-colors duration-200"
+                    href={link.href}
+                    className="font-medium text-[#545e69] text-[15px] leading-[26.2px]"
                   >
-                    {item}
+                    {link.title}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Categories */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold tracking-wide uppercase text-gray-800 dark:text-gray-200">
-              Categories
-            </h3>
-            <ul className="space-y-1.5">
-              {["World News", "Technology", "Business", "Sports"].map(
-                (category) => (
-                  <li key={category}>
-                    <a
-                      href={`/category/${category
-                        .toLowerCase()
-                        .replace(" ", "-")}`}
-                      className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary transition-colors duration-200"
-                    >
-                      {category}
-                    </a>
-                  </li>
-                )
-              )}
+          {/* Get Help column */}
+          <div className="flex flex-col space-y-4">
+            <div className="space-y-2">
+              <h3 className="font-extrabold [font-family:'Manrope',Helvetica] text-[#183354] text-xl leading-6">
+                Get Help
+              </h3>
+              <img
+                className="w-8 h-[5px]"
+                alt="Mask group"
+                src="/mask-group-8.svg"
+              />
+            </div>
+            <ul className="space-y-3">
+              {helpLinks.map((link, index) => (
+                <li key={index}>
+                  <a
+                    href={link.href}
+                    className="font-medium text-[#545e69] text-[15px] leading-[26.2px]"
+                  >
+                    {link.title}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold tracking-wide uppercase text-gray-800 dark:text-gray-200">
-              Newsletter
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Subscribe for daily updates.
-            </p>
+          {/* Explore column */}
+          <div className="flex flex-col space-y-4">
             <div className="space-y-2">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="text-sm h-9"
+              <h3 className="font-extrabold [font-family:'Manrope',Helvetica] text-[#183354] text-xl leading-6">
+                Explore
+              </h3>
+              <img
+                className="w-8 h-[5px]"
+                alt="Mask group"
+                src="/mask-group-10.svg"
               />
-              <Button className="w-full h-9 text-sm font-medium">
-                Subscribe
-              </Button>
             </div>
-          </div>
-        </div>
-
-        {/* Social Links & Copyright */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-3">
-            <div className="flex space-x-4">
-              {[
-                { icon: AiFillFacebook, href: "https://facebook.com" },
-                { icon: AiOutlineTwitter, href: "https://twitter.com" },
-                { icon: AiOutlineInstagram, href: "https://instagram.com" },
-                { icon: AiOutlineGithub, href: "https://github.com" },
-              ].map((social, index) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-primary transition-colors duration-200"
-                >
-                  <social.icon size={18} />
-                </a>
+            <ul className="space-y-3">
+              {exploreLinks.map((link, index) => (
+                <li key={index}>
+                  <a
+                    href={link.href}
+                    className="font-medium text-[#545e69] text-[15px] leading-[26.2px]"
+                  >
+                    {link.title}
+                  </a>
+                </li>
               ))}
+            </ul>
+          </div>
+
+          {/* Follow Us column */}
+          <div className="flex flex-col space-y-4">
+            <div className="space-y-2">
+              <h3 className="font-extrabold [font-family:'Manrope',Helvetica] text-[#183354] text-xl leading-6">
+                Follow Us On
+              </h3>
+              <img
+                className="w-8 h-[5px]"
+                alt="Mask group"
+                src="/mask-group-6.svg"
+              />
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              © {new Date().getFullYear()} Daily News. All rights reserved.
-            </p>
+            <ul className="space-y-3">
+              {socialLinks.map((link, index) => (
+                <li key={index}>
+                  <a
+                    href={link.href}
+                    className="font-medium text-[#545e69] text-[15px] leading-[26.2px] flex items-center gap-2 hover:text-[#183354] transition-colors"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {link.icon}
+                    {link.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

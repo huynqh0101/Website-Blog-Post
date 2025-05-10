@@ -10,15 +10,28 @@ interface ThemeContextType {
 interface ThemeProviderProps {
   children: ReactNode;
 }
+
 export const ThemeContext = createContext<ThemeContextType | undefined>(
   undefined
 );
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  useEffect(() => {
+    // Đọc theme từ localStorage chỉ khi component đã mount
+    const savedTheme = localStorage.getItem("theme");
+    setIsDarkMode(savedTheme === "dark");
+    setMounted(true);
+  }, []);
+
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    setIsDarkMode((prev) => {
+      const newTheme = !prev;
+      localStorage.setItem("theme", newTheme ? "dark" : "light");
+      return newTheme;
+    });
   };
 
   useEffect(() => {
@@ -28,6 +41,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       document.body.classList.remove("dark");
     }
   }, [isDarkMode]);
+
+  // Không render content cho đến khi component đã mount
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
       {children}

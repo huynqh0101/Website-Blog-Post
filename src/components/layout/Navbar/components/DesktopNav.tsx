@@ -23,7 +23,7 @@ export const DesktopNav = ({
 }: DesktopNavProps) => {
   return (
     <NavigationMenu
-      className={`hidden lg:flex transition-all duration-300 ${
+      className={`hidden lg:flex transition-all duration-300 relative ${
         isSearchVisible ? "-translate-x-20" : "translate-x-0"
       }`}
     >
@@ -43,15 +43,15 @@ export const DesktopNav = ({
               <>
                 <NavigationMenuTrigger
                   className={`relative px-6 py-2 transition-colors duration-300 font-medium tracking-wide text-[15px]
-                  after:absolute after:content-[''] after:bottom-0 after:left-0 after:w-full after:h-[2px]
-                  after:bg-primary after:transition-all after:duration-300
-                  after:origin-center after:transform after:scale-x-0
-                  hover:after:scale-x-100 data-[state=open]:bg-transparent
-                  ${
-                    isDarkMode
-                      ? "text-slate-300 hover:text-white data-[state=open]:text-white bg-transparent"
-                      : "text-slate-600 hover:text-primary data-[state=open]:text-primary"
-                  }`}
+                    after:absolute after:content-[''] after:bottom-0 after:left-0 after:w-full after:h-[2px]
+                    after:bg-primary after:transition-all after:duration-300
+                    after:origin-center after:transform after:scale-x-0
+                     hover:after:scale-x-100 data-[state=open]:bg-transparent
+                    ${
+                      isDarkMode
+                        ? "text-slate-200 hover:text-white data-[state=open]:text-white bg-transparent" // Thay đổi từ slate-300 thành slate-200
+                        : "text-slate-600 hover:text-primary data-[state=open]:text-primary"
+                    }`}
                 >
                   {item.name}
                 </NavigationMenuTrigger>
@@ -70,11 +70,16 @@ export const DesktopNav = ({
                         <Link
                           href={dropItem.href}
                           className={`block px-4 py-2 rounded-md text-[14px] transition-colors duration-300
-                          ${
-                            isDarkMode
-                              ? "text-slate-300 hover:bg-slate-800 hover:text-white"
-                              : "text-slate-600 hover:bg-slate-50 hover:text-primary"
-                          }`}
+                              ${
+                                isDarkMode
+                                  ? pathname === dropItem.href
+                                    ? "text-white bg-slate-800/60" // Active dropdown item in dark mode
+                                    : "text-slate-200 hover:bg-slate-800/40 hover:text-white" // Normal dropdown item in dark mode
+                                  : pathname === dropItem.href
+                                  ? "text-primary bg-slate-50" // Active dropdown item in light mode
+                                  : "text-slate-600 hover:bg-slate-50 hover:text-primary" // Normal dropdown item in light mode
+                              }
+                               `}
                         >
                           {dropItem.name}
                         </Link>

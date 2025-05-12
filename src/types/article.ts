@@ -13,6 +13,7 @@ export interface Article {
     alternativeText?: string;
   };
   author?: {
+    id: string;
     name: string;
     avatar?: {
       formats: {
@@ -21,5 +22,11 @@ export interface Article {
         };
       };
     };
+  };
+  content?: string;
+  category?: {
+    id: number;
+    name: string;
+    slug: string;
   };
 }

@@ -5,7 +5,7 @@ import { Article } from "@/types/article";
 import Image from "next/image";
 import Link from "next/link";
 import LoadingSpinner from "../ui/loading-spinner";
-
+import CategoryFilter from "../news/CategoryFilter";
 const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
 
@@ -17,9 +17,32 @@ const formatDate = (dateString: string) => {
   });
 };
 
+const handleArticleClick = (article: Article) => {
+  if (article.author) {
+    const authorData = {
+      id: article.author.id,
+      name: article.author.name,
+      avatar: article.author.avatar?.formats?.thumbnail?.url
+        ? `${API_URL}${article.author.avatar.formats.thumbnail.url}`
+        : null,
+    };
+    localStorage.setItem("currentAuthor", JSON.stringify(authorData));
+  }
+};
 export default function ArticleList() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
+  const handleCategoryChange = (category: string) => {
+    if (!category) {
+      setFilteredArticles(articles);
+    } else {
+      const filtered = articles.filter(
+        (article) => article.category?.slug === category
+      );
+      setFilteredArticles(filtered);
+    }
+  };
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -53,10 +76,17 @@ export default function ArticleList() {
 
   return (
     <section className="container p-4 mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Articles</h2>
+        <div className="flex-shrink-0">
+          <CategoryFilter onCategoryChange={handleCategoryChange} />
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.map((article) => (
           <Link
             href={`/articles/${article.slug}`}
+            onClick={() => handleArticleClick(article)}
             key={article.id}
             className="group w-full bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
           >

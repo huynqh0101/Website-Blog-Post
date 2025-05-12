@@ -86,7 +86,7 @@ export default function SignupForm() {
               name: formData.username,
               email: formData.email,
               password: formData.password,
-              avatar: 12, // Default avatar ID
+              avatar: 13, // Default avatar ID
             },
           }),
         });

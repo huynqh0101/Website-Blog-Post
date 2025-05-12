@@ -45,27 +45,71 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:1337/api/auth/local", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: formData.identifier,
-          password: formData.password,
-        }),
-      });
+      // 1. Login attempt
+      const loginResponse = await fetch(
+        "http://localhost:1337/api/auth/local",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            identifier: formData.identifier,
+            password: formData.password,
+          }),
+        }
+      );
 
-      const data = await response.json();
+      const loginData = await loginResponse.json();
 
-      if (!response.ok) {
-        throw new Error(data.error?.message || "Login failed");
+      if (!loginResponse.ok) {
+        throw new Error(loginData.error?.message || "Login failed");
       }
 
-      login(data.jwt, data.user);
-      toast.success("Login successful!");
+      console.log("Login successful, checking if user is author...");
+
+      // 2. Check if user is an author
+      const email = encodeURIComponent(formData.identifier);
+      const checkAuthorResponse = await fetch(
+        `http://localhost:1337/api/authors?filters[email][$eq]=${email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${loginData.jwt}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!checkAuthorResponse.ok) {
+        console.error("Author check failed:", await checkAuthorResponse.text());
+        // If author check fails, proceed as regular user
+        login(loginData.jwt, {
+          ...loginData.user,
+          role: "user",
+        });
+        toast.success("Login successful as user");
+        router.push("/");
+        return;
+      }
+
+      const authorData = await checkAuthorResponse.json();
+      console.log("Author check response:", authorData);
+
+      // Determine user role
+      const userRole =
+        authorData.data && authorData.data.length > 0 ? "author" : "user";
+      console.log("Determined role:", userRole);
+
+      login(loginData.jwt, {
+        ...loginData.user,
+        role: userRole,
+      });
+
+      toast.success(`Login successful as ${userRole}!`);
       router.push("/");
     } catch (error) {
+      console.error("Login error:", error);
       toast.error(error instanceof Error ? error.message : "Login failed");
     } finally {
       setLoading(false);

@@ -2,9 +2,15 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: "user" | "author";
+}
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: any | null;
+  user: User | null;
   login: (token: string, user: any) => void;
   logout: () => void;
 }

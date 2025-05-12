@@ -1,11 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/Footer";
-import { ThemeProvider } from "@/context/themeContext";
 import { Inter, Manrope } from "next/font/google";
-import { Toaster } from "sonner";
-import { AuthProvider } from "@/context/authContext";
+import RootLayoutClient from "./RootLayoutClient"; // Verify this file exists in the same directory
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,18 +33,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${manrope.variable} font-sans`}>
-        <AuthProvider>
-          <ThemeProvider>
-            <Navbar />
-            <main className="min-h-screen max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-              {children}
-              <Toaster />
-            </main>
-            <Footer />
-          </ThemeProvider>
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} ${manrope.variable} font-sans`} suppressHydrationWarning>
+        <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>
   );

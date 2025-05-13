@@ -1,42 +1,7 @@
 import { Metadata } from "next";
 import ArticleDetail from "@/components/articles/ArticleDetail";
-import { StrapiResponse, StrapiArticle } from "@/types/strapi-response";
-
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
-
-async function getArticle(slug: string) {
-  try {
-    const res = await fetch(
-      `${API_URL}/api/articles?filters[slug][$eq]=${slug}&populate=*`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
-        },
-        next: {
-          revalidate: 60, // Revalidate every 60 seconds
-        },
-      }
-    );
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
-    const response = await res.json();
-
-    // Check if we got any data back
-    if (!response.data || response.data.length === 0) {
-      throw new Error("Article not found");
-    }
-
-    // Return the first matching article
-    return response.data[0];
-  } catch (error) {
-    console.error("Error fetching article:", error);
-    throw new Error("Failed to fetch article");
-  }
-}
+import { StrapiArticle } from "@/types/strapi-response";
+import { articleService } from "@/services/articleService";
 
 export async function generateMetadata({
   params,
@@ -44,11 +9,10 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   try {
-    const article = await getArticle(params.slug);
-
+    const article = await articleService.getArticleBySlug(params.slug);
     return {
-      title: article.attributes.title,
-      description: article.attributes.description,
+      title: article.title,
+      description: article.description,
     };
   } catch (error) {
     return {
@@ -64,7 +28,7 @@ export default async function ArticlePage({
   params: { slug: string };
 }) {
   try {
-    const article = await getArticle(params.slug);
+    const article = await articleService.getArticleBySlug(params.slug);
     return <ArticleDetail article={article as StrapiArticle} />;
   } catch (error) {
     return (
@@ -78,26 +42,6 @@ export default async function ArticlePage({
   }
 }
 
-// Optional: Generate static params for known articles
 export async function generateStaticParams() {
-  try {
-    const res = await fetch(
-      `${API_URL}/api/articles?populate[author][populate]=avatar&populate=cover&populate=category`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
-        },
-      }
-    );
-
-    if (!res.ok) return [];
-
-    const response = await res.json();
-
-    return response.data.map((article: any) => ({
-      slug: article.attributes.slug,
-    }));
-  } catch (error) {
-    return [];
-  }
+  return await articleService.getAllArticleSlugs();
 }

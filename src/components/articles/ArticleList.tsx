@@ -13,7 +13,7 @@ export default function ArticleList() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
-
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const handleArticleClick = (article: Article) => {
     if (article.author) {
       const authorData = {
@@ -28,11 +28,12 @@ export default function ArticleList() {
   };
 
   const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
     if (!category) {
       setFilteredArticles(articles);
     } else {
       const filtered = articles.filter(
-        (article) => article.category?.slug === category
+        (article) => article.category?.name === category
       );
       setFilteredArticles(filtered);
     }
@@ -42,7 +43,7 @@ export default function ArticleList() {
     const fetchArticles = async () => {
       try {
         const response = await fetch(
-          `${API_URL}/api/articles?populate[author][populate]=avatar&populate=cover`,
+          `${API_URL}/api/articles?populate[author][populate]=avatar&populate[cover][populate]=*&populate=category`,
           {
             headers: {
               Authorization: `Bearer ${API_TOKEN}`,
@@ -50,13 +51,15 @@ export default function ArticleList() {
           }
         );
         const data = await response.json();
-        setTimeout(() => {
-          setArticles(data.data);
-          setLoading(false);
-        }, 1500);
+        console.log("API Response:", data);
+        const allArticles = data.data;
+        console.log("All Articles:", allArticles);
+        setArticles(allArticles);
+        setFilteredArticles(allArticles);
+
+        setLoading(false);
       } catch (error) {
         console.error("Lỗi khi tải bài viết:", error);
-      } finally {
         setLoading(false);
       }
     };
@@ -77,7 +80,7 @@ export default function ArticleList() {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {articles.map((article) => (
+        {filteredArticles.map((article) => (
           <ArticleCard
             key={article.id}
             article={article}

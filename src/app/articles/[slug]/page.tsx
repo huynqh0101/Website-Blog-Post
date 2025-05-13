@@ -8,8 +8,12 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
+  // Await the params object
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
+
   try {
-    const article = await articleService.getArticleBySlug(params.slug);
+    const article = await articleService.getArticleBySlug(slug);
     return {
       title: article.title,
       description: article.description,
@@ -22,13 +26,17 @@ export async function generateMetadata({
   }
 }
 
+// Update the page component as well
 export default async function ArticlePage({
   params,
 }: {
   params: { slug: string };
 }) {
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
+
   try {
-    const article = await articleService.getArticleBySlug(params.slug);
+    const article = await articleService.getArticleBySlug(slug);
     return <ArticleDetail article={article as StrapiArticle} />;
   } catch (error) {
     return (

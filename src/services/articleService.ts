@@ -7,7 +7,7 @@ export const articleService = {
   getArticleBySlug: async (slug: string): Promise<StrapiArticle> => {
     try {
       const res = await fetch(
-        `${API_URL}/api/articles?filters[slug][$eq]=${slug}&populate=*`,
+        `${API_URL}/api/articles?filters[slug][$eq]=${slug}&populate[blocks][populate]=*&populate[cover][populate]=*&populate[author][populate]=avatar&populate=category`,
         {
           headers: {
             Authorization: `Bearer ${API_TOKEN}`,
@@ -28,7 +28,8 @@ export const articleService = {
         throw new Error("Article not found");
       }
 
-      return response.data[0];
+      const article = response.data[0];
+      return article;
     } catch (error) {
       console.error("Error fetching article:", error);
       throw new Error("Failed to fetch article");

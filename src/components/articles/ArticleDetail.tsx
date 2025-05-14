@@ -1,10 +1,13 @@
 "use client";
 
 import { ArticleDetail as ArticleDetailType } from "@/types/article-detail";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useEffect, useState } from "react";
+import { CommentSection } from "@/components/comments/CommentSection";
 
 const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 
@@ -31,16 +34,60 @@ export default function ArticleDetail({
     switch (block.__component) {
       case "shared.rich-text":
         return (
-          <div key={block.id} className="prose prose-lg max-w-none">
+          <div
+            key={`rich-text-${block.id}`}
+            className="prose prose-lg max-w-none"
+          >
             <ReactMarkdown>{block.body}</ReactMarkdown>
           </div>
         );
       case "shared.quote":
         return (
-          <blockquote key={block.id} className="border-l-4 pl-4 my-4">
+          <blockquote
+            key={`quote-${block.id}`}
+            className="border-l-4 pl-4 my-4"
+          >
             <p className="italic">{block.body}</p>
             {block.title && <cite>— {block.title}</cite>}
           </blockquote>
+        );
+      case "shared.media":
+        return (
+          <div key={`media-${block.id}`} className="my-8">
+            <Image
+              src={`${API_URL}${block.file.url}`}
+              width={block.file.width}
+              height={block.file.height}
+              alt={block.file.alternativeText || ""}
+              className="rounded-lg w-full h-auto"
+            />
+          </div>
+        );
+      case "shared.slider":
+        return (
+          <div key={`slider-${block.id}`} className="my-8">
+            <Swiper
+              modules={[Navigation, Pagination]}
+              spaceBetween={30}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              className="w-full rounded-lg"
+            >
+              {block.files.map((file: any, index: number) => (
+                <SwiperSlide key={`slide-${block.id}-${index}`}>
+                  <div className="aspect-video relative">
+                    <Image
+                      src={`${API_URL}${file.url}`}
+                      alt={file.alternativeText || `Slide ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         );
       default:
         return null;
@@ -68,7 +115,7 @@ export default function ArticleDetail({
           <div>
             <p className="font-medium">{article.author?.name}</p>
             <time className="text-sm text-gray-500">
-              {new Date(article.publishedAt).toLocaleDateString("vi-VN", {
+              {new Date(article.publishedAt).toLocaleDateString("en-US", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
@@ -104,6 +151,9 @@ export default function ArticleDetail({
       <div className="max-w-4xl mx-auto space-y-8">
         {article.blocks?.map((block) => renderBlock(block))}
       </div>
+
+      {/* Comment Section */}
+      <CommentSection articleId={article.documentId} />
     </article>
   );
 }

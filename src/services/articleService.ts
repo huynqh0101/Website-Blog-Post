@@ -36,6 +36,21 @@ export const articleService = {
     }
   },
 
+  async getArticleById(id: string): Promise<StrapiArticle> {
+    try {
+      const response = await fetch(`http://localhost:1337/api/articles/${id}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch article");
+      }
+
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error("Error fetching article by ID:", error);
+      throw error;
+    }
+  },
   getAllArticleSlugs: async (): Promise<{ slug: string }[]> => {
     try {
       const res = await fetch(

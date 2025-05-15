@@ -3,6 +3,7 @@ export const navigationItems = [
     name: "About",
     href: "/about",
   },
+  // Add this to your navigation items
   {
     name: "News",
     href: "/news",

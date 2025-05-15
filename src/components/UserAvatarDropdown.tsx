@@ -1,15 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, LayoutDashboard } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface UserAvatarDropdownProps {
   username: string;
+  userRole?: string;
   onLogout: () => void;
   isDarkMode?: boolean;
 }
 
 export default function UserAvatarDropdown({
   username,
+  userRole,
   onLogout,
   isDarkMode = false,
 }: UserAvatarDropdownProps) {
@@ -64,6 +66,24 @@ export default function UserAvatarDropdown({
           }`}
         >
           <div className="py-1">
+            {/* Chỉ hiển thị Dashboard nếu user là author */}
+            {userRole === "author" && (
+              <button
+                onClick={() => {
+                  router.push("/dashbroad");
+                  setOpen(false);
+                }}
+                className={`flex items-center space-x-2 w-full px-4 py-2 text-sm
+                  ${
+                    isDarkMode
+                      ? "text-slate-300 hover:bg-slate-800 hover:text-white"
+                      : "text-slate-700 hover:bg-slate-100 hover:text-primary"
+                  }`}
+              >
+                <LayoutDashboard size={16} />
+                <span>Dashboard</span>
+              </button>
+            )}
             <button
               onClick={() => {
                 router.push("/profile");

@@ -60,7 +60,7 @@ const Navbar = () => {
 
   return (
     <header
-      className={`fixed w-full z-50 top-0 transition-all duration-300 ease-out shadow-md backdrop-blur-sm
+      className={`fixed w-full z-[999] top-0 transition-all duration-300 ease-out shadow-md backdrop-blur-sm
       ${
         isDarkMode
           ? "bg-slate-900/95 border-slate-800"

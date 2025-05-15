@@ -24,6 +24,7 @@ export const AuthButtons = ({
       {isAuthenticated ? (
         <UserAvatarDropdown
           username={user?.username || "User"}
+          userRole={user.role}
           onLogout={onLogout}
           isDarkMode={isDarkMode}
         />

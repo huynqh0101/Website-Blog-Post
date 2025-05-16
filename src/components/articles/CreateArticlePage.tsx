@@ -12,6 +12,7 @@ import ArticleBasicInfo from "./components/ArticleBasicInfo";
 import ArticleCoverImage from "./components/ArticleCoverImage";
 import ArticleMetadata from "./components/ArticleMetadata";
 import ArticleBlocks from "./components/ArticleBlocks";
+import { uploadFiles } from "@/services/articleService";
 
 // Type definitions for our content
 type BlockType = "rich-text" | "media" | "quote" | "slider";
@@ -38,7 +39,7 @@ export default function NewArticlePage() {
   const [categoryId, setCategoryId] = useState("");
   const [type, setType] = useState("blog");
   const [blocks, setBlocks] = useState<BlockData[]>([]);
-  const [authorId, setAuthorId] = useState<number | null>(null);
+  const [authorId, setAuthorId] = useState<string | null>(null);
 
   // Image upload state
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -63,6 +64,32 @@ export default function NewArticlePage() {
       );
     }
   }, [title]);
+
+  const handleCoverImageUpload = async () => {
+    if (!coverImage) {
+      toast.error("Please select an image first");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+
+      // Sử dụng service chung uploadFiles
+      const fileIds = await uploadFiles(coverImage);
+
+      if (fileIds && fileIds.length > 0) {
+        setCoverImageId(fileIds[0]);
+        toast.success("Cover image uploaded successfully");
+      } else {
+        throw new Error("Failed to get file ID from server");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Fetch categories when component mounts
   useEffect(() => {
@@ -93,13 +120,6 @@ export default function NewArticlePage() {
     fetchCategories();
   }, []);
 
-  // Set author ID from current user
-  useEffect(() => {
-    if (user) {
-      setAuthorId(user.id);
-    }
-  }, [user]);
-
   // Handle cover image selection
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -107,46 +127,6 @@ export default function NewArticlePage() {
       setCoverImage(file);
       setCoverPreview(URL.createObjectURL(file));
       setCoverImageId(null);
-    }
-  };
-
-  // Upload cover image to Strapi
-  const handleCoverImageUpload = async () => {
-    if (!coverImage) {
-      toast.error("Please select an image first");
-      return;
-    }
-
-    try {
-      setIsUploading(true);
-      const formData = new FormData();
-      formData.append("files", coverImage);
-
-      const token = localStorage.getItem("jwt");
-      const response = await fetch("http://localhost:1337/api/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const data = await response.json();
-      if (data && data.length > 0) {
-        setCoverImageId(data[0].id);
-        toast.success("Cover image uploaded successfully");
-      } else {
-        throw new Error("Invalid response from server");
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image");
-    } finally {
-      setIsUploading(false);
     }
   };
 
@@ -197,40 +177,99 @@ export default function NewArticlePage() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!title || !description || !coverImageId || !authorId) {
+    const storedAuthorId = localStorage.getItem("authorDocumentId");
+    if (!title || !description || !coverImageId) {
       toast.error("Please fill all required fields and upload a cover image");
+      return;
+    }
+    if (!storedAuthorId) {
+      toast.error("No author ID found. Please login again.");
       return;
     }
 
     try {
       setIsSubmitting(true);
-      const token = localStorage.getItem("jwt");
 
-      const articleData = {
+      // Chuyển đổi format của blocks nếu cần
+      const formattedBlocks = blocks.map((block) => {
+        if (block.__component === "shared.rich-text") {
+          return {
+            __component: block.__component,
+            body: block.content, // Đổi từ content thành body
+          };
+        } else if (block.__component === "shared.quote") {
+          return {
+            __component: block.__component,
+            title: block.text, // Đổi từ text thành title
+            body: block.author, // Đổi từ author thành body
+          };
+        } else if (block.__component === "shared.media") {
+          return {
+            __component: block.__component,
+            file: block.file, // Đảm bảo sử dụng trường file là số ID
+          };
+        } else if (block.__component === "shared.slider") {
+          return {
+            __component: block.__component,
+            files: block.files, // Đảm bảo files là mảng các số ID
+          };
+        }
+        // Giữ nguyên các loại block khác
+        return block;
+      });
+
+      // Định nghĩa kiểu dữ liệu cho articleData
+      interface ArticleData {
+        data: {
+          title: string;
+          description: string;
+          slug: string;
+          type: string;
+          author: string | null;
+          category: number | null;
+          cover: number | null;
+          blocks?: any[]; // Thêm trường blocks là tùy chọn
+        };
+      }
+
+      // Khởi tạo articleData với kiểu đã định nghĩa
+      const articleData: ArticleData = {
         data: {
           title,
           description,
           slug,
-          author: authorId,
+          author: storedAuthorId,
           category: categoryId ? parseInt(categoryId) : null,
           cover: coverImageId,
-          type,
-          blocks,
+          type: type || "blog",
         },
       };
 
+      // Chỉ thêm blocks vào khi có dữ liệu
+      if (formattedBlocks.length > 0) {
+        articleData.data.blocks = formattedBlocks;
+      }
+
+      console.log("Sending data:", JSON.stringify(articleData));
+
+      // Phần còn lại của mã không thay đổi
       const response = await fetch("http://localhost:1337/api/articles", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(articleData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create article");
+        const errorData = await response.json();
+        console.error("Error response details:", errorData);
+        console.error("Error status:", response.status);
+        throw new Error(
+          `Failed to create article: ${
+            errorData.error?.message || "Unknown error"
+          }`
+        );
       }
 
       const data = await response.json();
@@ -252,10 +291,10 @@ export default function NewArticlePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1b1b2f] to-[#162447] text-white py-10 px-4 md:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-50 text-slate-800 py-10 px-4 md:px-8">
       <form
         onSubmit={handleSubmit}
-        className="max-w-6xl mx-auto space-y-10 bg-[#1f1f3d]/50 p-6 md:p-8 rounded-xl shadow-2xl backdrop-blur-sm"
+        className="max-w-6xl mx-auto space-y-10 bg-white/90 p-6 md:p-8 rounded-xl shadow-lg backdrop-blur-sm border border-blue-100"
       >
         <ArticleHeader
           isSubmitting={isSubmitting}
@@ -264,7 +303,7 @@ export default function NewArticlePage() {
         />
 
         {/* Basic info section */}
-        <div className="border-b border-indigo-500/30 pb-8">
+        <div className="border-b border-blue-100 pb-8">
           <ArticleBasicInfo
             title={title}
             setTitle={setTitle}
@@ -274,7 +313,7 @@ export default function NewArticlePage() {
         </div>
 
         {/* Slug and Cover Image */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-indigo-500/30 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-blue-100 pb-8">
           <ArticleBasicInfo.Slug slug={slug} setSlug={setSlug} title={title} />
 
           <ArticleCoverImage
@@ -291,10 +330,10 @@ export default function NewArticlePage() {
         </div>
 
         {/* Author and Category */}
-        <div className="border-b border-indigo-500/30 pb-8">
+        <div className="border-b border-blue-100 pb-8">
           <ArticleMetadata
             authorId={authorId}
-            setAuthorId={setAuthorId}
+            setAuthorId={() => {}}
             user={user}
             categoryId={categoryId}
             setCategoryId={setCategoryId}

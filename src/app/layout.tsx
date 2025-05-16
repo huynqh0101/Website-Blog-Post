@@ -34,7 +34,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${manrope.variable} font-sans`} suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${manrope.variable} font-sans`}
+        suppressHydrationWarning
+      >
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>

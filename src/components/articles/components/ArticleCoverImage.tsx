@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 
 interface ArticleCoverImageProps {
@@ -26,38 +26,54 @@ export default function ArticleCoverImage({
   handleCoverImageChange,
 }: ArticleCoverImageProps) {
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-400">Cover</label>
+    <div className="space-y-3 mb-8">
+      <label className="text-sm font-medium text-blue-700 flex items-center gap-2">
+        <ImageIcon className="w-4 h-4" /> Cover Image
+      </label>
       <div
-        className="h-[120px] bg-[#24243c] rounded flex items-center justify-center cursor-pointer border border-dashed border-gray-600"
+        className={`h-[180px] rounded-lg flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-300 ${
+          coverPreview
+            ? "border-none shadow-md shadow-blue-200"
+            : "bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-dashed border-blue-200 hover:border-blue-400"
+        }`}
         onClick={() => document.getElementById("cover-input")?.click()}
       >
         {coverPreview ? (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full group">
             <Image
               src={coverPreview}
               alt="Cover preview"
               fill
-              className="object-cover rounded"
+              className="object-cover rounded-lg"
             />
-            <button
-              type="button"
-              className="absolute top-2 right-2 bg-black bg-opacity-50 rounded-full p-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                setCoverPreview(null);
-                setCoverImage(null);
-                setCoverImageId(null);
-              }}
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-3">
+              <span className="text-xs text-white font-medium">
+                Click to change image
+              </span>
+              <button
+                type="button"
+                className="bg-red-500/80 hover:bg-red-600 text-white rounded-full p-1.5 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCoverPreview(null);
+                  setCoverImage(null);
+                  setCoverImageId(null);
+                }}
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         ) : (
-          <div className="text-center">
-            <Plus className="h-10 w-10 mx-auto text-gray-500" />
-            <span className="text-sm text-gray-500">
-              Click to add an asset or drag and drop one in this area
+          <div className="text-center px-4">
+            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2">
+              <Plus className="h-6 w-6 text-blue-600" />
+            </div>
+            <span className="text-sm text-blue-800 block">
+              Click to select a cover image
+            </span>
+            <span className="text-xs text-blue-600 mt-1 block">
+              Recommended: 1200 x 600 pixels
             </span>
             <input
               type="file"
@@ -74,14 +90,24 @@ export default function ArticleCoverImage({
           type="button"
           onClick={handleCoverImageUpload}
           disabled={isUploading}
-          className="w-full bg-indigo-600 hover:bg-indigo-700"
+          className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-sm"
           size="sm"
         >
-          {isUploading ? "Uploading..." : "Upload Cover Image"}
+          {isUploading ? (
+            <span className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              Uploading...
+            </span>
+          ) : (
+            "Upload Cover Image"
+          )}
         </Button>
       )}
       {coverImageId && (
-        <p className="text-xs text-green-500">Image ID: {coverImageId}</p>
+        <p className="text-xs bg-green-100 text-green-700 py-1.5 px-3 rounded-md font-medium flex items-center">
+          <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+          Image uploaded successfully (ID: {coverImageId})
+        </p>
       )}
     </div>
   );

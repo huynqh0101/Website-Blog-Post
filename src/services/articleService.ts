@@ -1,7 +1,10 @@
 import { StrapiArticle, StrapiResponse } from "@/types/strapi-response";
-
+import { toast } from "sonner";
 const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
+const getAuthToken = (): string | null => {
+  return localStorage.getItem("token");
+};
 
 export const articleService = {
   getArticleBySlug: async (slug: string): Promise<StrapiArticle> => {
@@ -72,4 +75,56 @@ export const articleService = {
       return [];
     }
   },
+};
+
+export const uploadFiles = async (
+  files: File | File[]
+): Promise<number[] | null> => {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      toast.error("Authentication token not found");
+      return null;
+    }
+
+    const formData = new FormData();
+
+    // Xử lý cả trường hợp một file hoặc nhiều file
+    if (Array.isArray(files)) {
+      files.forEach((file) => formData.append("files", file));
+    } else {
+      formData.append("files", files);
+    }
+
+    console.log(`Uploading ${Array.isArray(files) ? files.length : 1} file(s)`);
+
+    const response = await fetch(`${API_URL}/api/upload`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Upload error response:", errorText);
+      throw new Error(
+        `Failed to upload files: ${response.status} ${errorText}`
+      );
+    }
+
+    const data = await response.json();
+
+    // Trả về mảng các ID
+    return data.map((file: any) => file.id);
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    toast.error(
+      `Upload failed: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+    return null;
+  }
 };

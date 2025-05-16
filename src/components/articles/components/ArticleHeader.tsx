@@ -12,21 +12,23 @@ export default function ArticleHeader({
   onCancel,
 }: ArticleHeaderProps) {
   return (
-    <div className="flex justify-between items-center">
-      <h1 className="text-2xl font-medium">Create New Article</h1>
+    <div className="flex justify-between items-center border-b border-blue-100 pb-4 mb-6">
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        Create New Article
+      </h1>
       <div className="flex space-x-3">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className="border-gray-600 text-gray-300 hover:bg-gray-800"
+          className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-colors"
         >
           Cancel
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting || !coverImageId}
-          className="bg-indigo-600 hover:bg-indigo-700"
+          className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md shadow-blue-200"
         >
           {isSubmitting ? "Creating..." : "Save"}
         </Button>

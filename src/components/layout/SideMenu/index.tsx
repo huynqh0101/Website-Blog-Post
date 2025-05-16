@@ -8,16 +8,18 @@ import {
   BarChartIcon,
   XIcon,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { useSidebar } from "@/context/sidebarContext";
 
 export const SideMenuByAnima = (): JSX.Element => {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const pathname = usePathname();
+  const { isCollapsed, toggleSidebar } = useSidebar();
   const [topOffset, setTopOffset] = useState(0);
 
   // Lấy chiều cao của header để đặt top cho sidebar
@@ -29,19 +31,55 @@ export const SideMenuByAnima = (): JSX.Element => {
     }
   }, []);
 
-  // Thông báo sự thay đổi trạng thái sidebar
-  useEffect(() => {
-    // Gửi sự kiện khi sidebar thay đổi trạng thái
-    const event = new CustomEvent("sidebar-toggle", {
-      detail: { collapsed: isCollapsed },
-    });
-    window.dispatchEvent(event);
-  }, [isCollapsed]);
+  // Loại bỏ custom event useEffect
 
   const handleLogout = () => {
     logout();
     router.push("/");
   };
+
+  // Memoize menu items với active state dựa trên current path
+  const menuItems = useMemo(
+    () => [
+      {
+        href: "/dashbroad",
+        icon: <LayoutDashboardIcon className="w-5 h-5" />,
+        label: "Dashboard",
+        isActive: pathname === "/dashbroad",
+      },
+      {
+        href: "/dashbroad/my-articles",
+        icon: <FileTextIcon className="w-5 h-5" />,
+        label: "My Articles",
+        isActive: pathname === "/dashbroad/my-articles",
+      },
+      {
+        href: "/dashbroad/new-article",
+        icon: <PenToolIcon className="w-5 h-5" />,
+        label: "Write New",
+        isActive: pathname === "/dashbroad/new-article",
+      },
+      {
+        href: "/dashbroad/statistics",
+        icon: <BarChartIcon className="w-5 h-5" />,
+        label: "Statistics",
+        isActive: pathname === "/dashbroad/statistics",
+      },
+      {
+        href: "/dashbroad/guidelines",
+        icon: <BookIcon className="w-5 h-5" />,
+        label: "Writing Guidelines",
+        isActive: pathname === "/dashbroad/guidelines",
+      },
+      {
+        href: "/dashbroad/settings",
+        icon: <SettingsIcon className="w-5 h-5" />,
+        label: "Settings",
+        isActive: pathname === "/dashbroad/settings",
+      },
+    ],
+    [pathname]
+  );
 
   return (
     <aside
@@ -54,18 +92,18 @@ export const SideMenuByAnima = (): JSX.Element => {
         height: "auto",
       }}
     >
-      <div className="flex flex-col h-full p-5 overflow-y-auto">
+      <div className="flex flex-col h-full p-4 overflow-y-auto">
         {/* Header with Toggle Button */}
         <div
           className={`flex items-center ${
             isCollapsed ? "justify-center" : "justify-between"
-          } mb-8`}
+          } mb-6`}
         >
           {!isCollapsed && (
             <div className="flex items-center">
-              <BookIcon className="w-7 h-7 text-[#3a5b22]" />
-              <div className="ml-3">
-                <h1 className="font-[Poppins,Helvetica] font-semibold text-xl text-[#3a5b22]">
+              <BookIcon className="w-6 h-6 text-[#3a5b22]" />
+              <div className="ml-2.5">
+                <h1 className="font-['Inter',sans-serif] font-semibold text-lg text-[#3a5b22] tracking-tight">
                   Author Panel
                 </h1>
               </div>
@@ -78,110 +116,40 @@ export const SideMenuByAnima = (): JSX.Element => {
             className={`p-1 hover:bg-gray-100 rounded-full ${
               isCollapsed ? "mx-auto" : ""
             }`}
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={toggleSidebar}
           >
             {isCollapsed ? (
-              <MenuIcon className="w-5 h-5" />
+              <MenuIcon className="w-4.5 h-4.5" />
             ) : (
-              <XIcon className="w-5 h-5" />
+              <XIcon className="w-4.5 h-4.5" />
             )}
           </Button>
         </div>
 
         {/* Navigation Menu */}
         <nav className="flex-1">
-          <ul className="space-y-2">
-            {/* Menu items */}
-            <li>
-              <Link
-                href="/dashbroad"
-                className={`flex items-center py-3 px-3 rounded-lg transition-colors bg-[#3a5b22] text-white ${
-                  isCollapsed ? "justify-center" : ""
-                }`}
-              >
-                <LayoutDashboardIcon className="w-5 h-5" />
-                {!isCollapsed && (
-                  <span className="ml-3 font-[Poppins,Helvetica] font-medium text-sm">
-                    Dashboard
+          <ul className="space-y-2.5">
+            {menuItems.map((item, index) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 ${
+                    item.isActive
+                      ? "bg-[#3a5b22] text-white hover:bg-[#4a7029]"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-[#3a5b22]"
+                  } ${isCollapsed ? "justify-center" : ""}`}
+                >
+                  <span className="flex items-center justify-center w-5 h-5">
+                    {item.icon}
                   </span>
-                )}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashbroad/my-articles"
-                className={`flex items-center py-3 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 ${
-                  isCollapsed ? "justify-center" : ""
-                }`}
-              >
-                <FileTextIcon className="w-5 h-5" />
-                {!isCollapsed && (
-                  <span className="ml-3 font-[Poppins,Helvetica] font-medium text-sm">
-                    My Articles
-                  </span>
-                )}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashbroad/new-article"
-                className={`flex items-center py-3 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 ${
-                  isCollapsed ? "justify-center" : ""
-                }`}
-              >
-                <PenToolIcon className="w-5 h-5" />
-                {!isCollapsed && (
-                  <span className="ml-3 font-[Poppins,Helvetica] font-medium text-sm">
-                    Write New
-                  </span>
-                )}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashbroad/statistics"
-                className={`flex items-center py-3 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 ${
-                  isCollapsed ? "justify-center" : ""
-                }`}
-              >
-                <BarChartIcon className="w-5 h-5" />
-                {!isCollapsed && (
-                  <span className="ml-3 font-[Poppins,Helvetica] font-medium text-sm">
-                    Statistics
-                  </span>
-                )}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashbroad/guidelines"
-                className={`flex items-center py-3 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 ${
-                  isCollapsed ? "justify-center" : ""
-                }`}
-              >
-                <BookIcon className="w-5 h-5" />
-                {!isCollapsed && (
-                  <span className="ml-3 font-[Poppins,Helvetica] font-medium text-sm">
-                    Writing Guidelines
-                  </span>
-                )}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashbroad/settings"
-                className={`flex items-center py-3 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 ${
-                  isCollapsed ? "justify-center" : ""
-                }`}
-              >
-                <SettingsIcon className="w-5 h-5" />
-                {!isCollapsed && (
-                  <span className="ml-3 font-[Poppins,Helvetica] font-medium text-sm">
-                    Settings
-                  </span>
-                )}
-              </Link>
-            </li>
+                  {!isCollapsed && (
+                    <span className="ml-3 font-['Inter',sans-serif] font-medium text-sm tracking-tight">
+                      {item.label}
+                    </span>
+                  )}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>

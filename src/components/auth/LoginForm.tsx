@@ -105,6 +105,15 @@ export default function LoginForm() {
         authorData.data && authorData.data.length > 0 ? "author" : "user";
       console.log("Determined role:", userRole);
 
+      if (
+        userRole === "author" &&
+        authorData.data &&
+        authorData.data.length > 0
+      ) {
+        const authorDocumentId = authorData.data[0].documentId;
+        localStorage.setItem("authorDocumentId", authorDocumentId);
+        console.log("Author documentId saved:", authorDocumentId);
+      }
       login(loginData.jwt, {
         ...loginData.user,
         role: userRole,

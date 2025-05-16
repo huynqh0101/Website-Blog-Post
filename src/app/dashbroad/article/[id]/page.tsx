@@ -53,8 +53,8 @@ export default function ArticlePage() {
   };
 
   const handleEdit = () => {
-    if (article?.id) {
-      router.push(`/dashbroad/edit-article/${article.id}`);
+    if (article?.documentId) {
+      router.push(`/dashbroad/edit-article/${article.documentId}`);
     }
   };
 
@@ -88,7 +88,7 @@ export default function ArticlePage() {
         <Button
           variant="ghost"
           onClick={handleBack}
-          className="fixed top-[70px] left-6 z-50 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md transition-colors duration-200"
+          className="fixed top-[75px] left-[85px] z-50 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md transition-colors duration-200"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Dashboard</span>
@@ -96,7 +96,7 @@ export default function ArticlePage() {
 
         <Button
           onClick={handleEdit}
-          className="fixed top-[70px] right-6 z-50 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200"
+          className="fixed top-[75px] right-6 z-50 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200"
         >
           <Edit className="w-4 h-4" />
           <span>Edit Article</span>

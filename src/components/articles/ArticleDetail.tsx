@@ -1,304 +1,159 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/authContext";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArticleDetail as ArticleDetailType } from "@/types/article-detail";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import Image from "next/image";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import { useEffect, useState } from "react";
+import { CommentSection } from "@/components/comments/CommentSection";
 
-import ArticleHeader from "./components/ArticleHeader";
-import ArticleBasicInfo from "./components/ArticleBasicInfo";
-import ArticleCoverImage from "./components/ArticleCoverImage";
-import ArticleMetadata from "./components/ArticleMetadata";
-import ArticleBlocks from "./components/ArticleBlocks";
-import { uploadFiles } from "@/services/articleService";
+const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 
-// Type definitions for our content
-type BlockType = "rich-text" | "media" | "quote" | "slider";
-
-interface BlockData {
-  __component: string;
-  id?: number;
-  [key: string]: any;
-}
-
-type Category = {
+type AuthorData = {
   id: number;
   name: string;
+  avatar: string | null;
 };
 
-export default function NewArticlePage() {
-  const router = useRouter();
-  const { user } = useAuth();
+export default function ArticleDetail({
+  article,
+}: {
+  article: ArticleDetailType;
+}) {
+  const [authorData, setAuthorData] = useState<AuthorData | null>(null);
 
-  // Form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [slug, setSlug] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [type, setType] = useState("blog");
-  const [blocks, setBlocks] = useState<BlockData[]>([]);
-  const [authorId, setAuthorId] = useState<number | null>(null);
-
-  // Image upload state
-  const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [coverImageId, setCoverImageId] = useState<number | null>(null);
-
-  // Loading states
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Generate slug from title
   useEffect(() => {
-    if (title) {
-      setSlug(
-        title
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
-      );
+    const savedAuthor = localStorage.getItem("currentAuthor");
+    if (savedAuthor) {
+      setAuthorData(JSON.parse(savedAuthor));
     }
-  }, [title]);
-
-  const handleCoverImageUpload = async () => {
-    if (!coverImage) {
-      toast.error("Please select an image first");
-      return;
-    }
-
-    try {
-      setIsUploading(true);
-
-      // Sử dụng service chung uploadFiles
-      const fileIds = await uploadFiles(coverImage);
-
-      if (fileIds && fileIds.length > 0) {
-        setCoverImageId(fileIds[0]);
-        toast.success("Cover image uploaded successfully");
-      } else {
-        throw new Error("Failed to get file ID from server");
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image");
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  // Fetch categories when component mounts
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setIsLoadingCategories(true);
-        const response = await fetch("http://localhost:1337/api/categories", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch categories");
-        }
-
-        const data = await response.json();
-        setCategories(data.data || []);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        toast.error("Failed to load categories");
-      } finally {
-        setIsLoadingCategories(false);
-      }
-    };
-
-    fetchCategories();
   }, []);
-
-  // Set author ID from current user
-  useEffect(() => {
-    if (user) {
-      setAuthorId(user.id);
-    }
-  }, [user]);
-
-  // Handle cover image selection
-  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setCoverImage(file);
-      setCoverPreview(URL.createObjectURL(file));
-      setCoverImageId(null);
-    }
-  };
-
-  // Add a new block
-  const addBlock = (type: BlockType) => {
-    let newBlock: BlockData;
-
-    switch (type) {
-      case "rich-text":
-        newBlock = {
-          __component: "shared.rich-text",
-          content: "",
-        };
-        break;
-      case "media":
-        newBlock = {
-          __component: "shared.media",
-          file: null,
-          caption: "",
-        };
-        break;
-      case "quote":
-        newBlock = {
-          __component: "shared.quote",
-          text: "",
-          author: "",
-        };
-        break;
-      case "slider":
-        newBlock = {
-          __component: "shared.slider",
-          files: [],
-        };
-        break;
+  const renderBlock = (block: any) => {
+    switch (block.__component) {
+      case "shared.rich-text":
+        return (
+          <div
+            key={`rich-text-${block.id}`}
+            className="prose prose-lg max-w-none"
+          >
+            <ReactMarkdown>{block.body}</ReactMarkdown>
+          </div>
+        );
+      case "shared.quote":
+        return (
+          <blockquote
+            key={`quote-${block.id}`}
+            className="border-l-4 pl-4 my-4"
+          >
+            <p className="italic">{block.body}</p>
+            {block.title && <cite>— {block.title}</cite>}
+          </blockquote>
+        );
+      case "shared.media":
+        return (
+          <div key={`media-${block.id}`} className="my-8">
+            <Image
+              src={`${API_URL}${block.file.url}`}
+              width={block.file.width}
+              height={block.file.height}
+              alt={block.file.alternativeText || ""}
+              className="rounded-lg w-full h-auto"
+            />
+          </div>
+        );
+      case "shared.slider":
+        return (
+          <div key={`slider-${block.id}`} className="my-8">
+            <Swiper
+              modules={[Navigation, Pagination]}
+              spaceBetween={30}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              className="w-full rounded-lg"
+            >
+              {block.files.map((file: any, index: number) => (
+                <SwiperSlide key={`slide-${block.id}-${index}`}>
+                  <div className="aspect-video relative">
+                    <Image
+                      src={`${API_URL}${file.url}`}
+                      alt={file.alternativeText || `Slide ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        );
       default:
-        return;
+        return null;
     }
-
-    setBlocks([...blocks, newBlock]);
-  };
-
-  // Remove a block
-  const removeBlock = (index: number) => {
-    const newBlocks = blocks.filter((_, i) => i !== index);
-    setBlocks(newBlocks);
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!title || !description || !coverImageId || !authorId) {
-      toast.error("Please fill all required fields and upload a cover image");
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      const token = localStorage.getItem("jwt");
-
-      const articleData = {
-        data: {
-          title,
-          description,
-          slug,
-          author: authorId,
-          category: categoryId ? parseInt(categoryId) : null,
-          cover: coverImageId,
-          type,
-          blocks,
-        },
-      };
-
-      const response = await fetch("http://localhost:1337/api/articles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(articleData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create article");
-      }
-
-      const data = await response.json();
-      toast.success("Article created successfully");
-      router.push(`/dashbroad/article/${data.data.id}`);
-    } catch (error) {
-      console.error("Error creating article:", error);
-      toast.error("Failed to create article");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Update block content
-  const updateBlockContent = (index: number, key: string, value: any) => {
-    const newBlocks = [...blocks];
-    newBlocks[index][key] = value;
-    setBlocks(newBlocks);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#c2c2d1] to-[#b9bfce] text-white py-10 px-4 md:px-8">
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-6xl mx-auto space-y-10 bg-[#1f1f3d]/50 p-6 md:p-8 rounded-xl shadow-2xl backdrop-blur-sm"
-      >
-        <ArticleHeader
-          isSubmitting={isSubmitting}
-          coverImageId={coverImageId}
-          onCancel={() => router.push("/dashbroad")}
-        />
+    <article className="container mx-auto px-4 py-8 pt-20">
+      {/* Header */}
+      <header className="max-w-4xl mx-auto mb-8">
+        <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
 
-        {/* Basic info section */}
-        <div className="border-b border-indigo-500/30 pb-8">
-          <ArticleBasicInfo
-            title={title}
-            setTitle={setTitle}
-            description={description}
-            setDescription={setDescription}
-          />
+        {/* Author and Date info */}
+        <div className="flex items-center gap-4 mb-6">
+          {authorData?.avatar && (
+            <div className="w-12 h-12 relative rounded-full overflow-hidden">
+              <Image
+                src={authorData.avatar}
+                alt={authorData.name || "Author"}
+                fill
+                className="object-cover"
+              />
+            </div>
+          )}
+          <div>
+            <p className="font-medium">{article.author?.name}</p>
+            <time className="text-sm text-gray-500">
+              {new Date(article.publishedAt).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </time>
+          </div>
         </div>
 
-        {/* Slug and Cover Image */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-indigo-500/30 pb-8">
-          <ArticleBasicInfo.Slug slug={slug} setSlug={setSlug} title={title} />
+        {/* Category */}
+        {article.category && (
+          <Link
+            href={`/categories/${article.category.slug}`}
+            className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium hover:bg-primary/20 transition-colors"
+          >
+            {article.category.name}
+          </Link>
+        )}
+      </header>
 
-          <ArticleCoverImage
-            coverPreview={coverPreview}
-            setCoverPreview={setCoverPreview}
-            setCoverImage={setCoverImage}
-            setCoverImageId={setCoverImageId}
-            coverImage={coverImage}
-            coverImageId={coverImageId}
-            isUploading={isUploading}
-            handleCoverImageUpload={handleCoverImageUpload}
-            handleCoverImageChange={handleCoverImageChange}
+      {/* Cover Image */}
+      {article.cover?.formats?.medium?.url && (
+        <div className="max-w-4xl mx-auto mb-8 relative aspect-video">
+          <Image
+            src={`${API_URL}${article.cover.formats.medium.url}`}
+            alt={article.cover.alternativeText || article.title}
+            fill
+            className="object-cover rounded-xl"
           />
         </div>
+      )}
 
-        {/* Author and Category */}
-        <div className="border-b border-indigo-500/30 pb-8">
-          <ArticleMetadata
-            authorId={authorId}
-            setAuthorId={setAuthorId}
-            user={user}
-            categoryId={categoryId}
-            setCategoryId={setCategoryId}
-            categories={categories}
-          />
-        </div>
+      {/* Content Blocks */}
+      <div className="max-w-4xl mx-auto space-y-8">
+        {article.blocks?.map((block) => renderBlock(block))}
+      </div>
 
-        {/* Blocks (Dynamic Zone) */}
-        <div className="pt-2">
-          <ArticleBlocks
-            blocks={blocks}
-            updateBlockContent={updateBlockContent}
-            removeBlock={removeBlock}
-            addBlock={addBlock}
-          />
-        </div>
-      </form>
-    </div>
+      {/* Comment Section */}
+      <CommentSection articleId={article.documentId} />
+    </article>
   );
 }

@@ -37,9 +37,8 @@ export default function NewArticlePage() {
   const [description, setDescription] = useState("");
   const [slug, setSlug] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [type, setType] = useState("blog");
+  const [type, setType] = useState("News");
   const [blocks, setBlocks] = useState<BlockData[]>([]);
-  const [authorId, setAuthorId] = useState<string | null>(null);
 
   // Image upload state
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -332,9 +331,8 @@ export default function NewArticlePage() {
         {/* Author and Category */}
         <div className="border-b border-blue-100 pb-8">
           <ArticleMetadata
-            authorId={authorId}
-            setAuthorId={() => {}}
-            user={user}
+            type={type}
+            setType={setType}
             categoryId={categoryId}
             setCategoryId={setCategoryId}
             categories={categories}

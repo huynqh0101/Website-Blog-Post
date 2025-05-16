@@ -23,11 +23,11 @@ export default function ArticleCoverImage({
   coverImageId,
   isUploading,
   handleCoverImageUpload,
-  handleCoverImageChange
+  handleCoverImageChange,
 }: ArticleCoverImageProps) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-400">cover</label>
+      <label className="text-sm font-medium text-gray-400">Cover</label>
       <div
         className="h-[120px] bg-[#24243c] rounded flex items-center justify-center cursor-pointer border border-dashed border-gray-600"
         onClick={() => document.getElementById("cover-input")?.click()}

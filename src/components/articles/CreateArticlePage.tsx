@@ -252,8 +252,11 @@ export default function NewArticlePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1b1b2f] text-white py-10 px-8">
-      <form onSubmit={handleSubmit} className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#1b1b2f] to-[#162447] text-white py-10 px-4 md:px-8">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-6xl mx-auto space-y-10 bg-[#1f1f3d]/50 p-6 md:p-8 rounded-xl shadow-2xl backdrop-blur-sm"
+      >
         <ArticleHeader
           isSubmitting={isSubmitting}
           coverImageId={coverImageId}
@@ -261,15 +264,17 @@ export default function NewArticlePage() {
         />
 
         {/* Basic info section */}
-        <ArticleBasicInfo
-          title={title}
-          setTitle={setTitle}
-          description={description}
-          setDescription={setDescription}
-        />
+        <div className="border-b border-indigo-500/30 pb-8">
+          <ArticleBasicInfo
+            title={title}
+            setTitle={setTitle}
+            description={description}
+            setDescription={setDescription}
+          />
+        </div>
 
         {/* Slug and Cover Image */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-indigo-500/30 pb-8">
           <ArticleBasicInfo.Slug slug={slug} setSlug={setSlug} title={title} />
 
           <ArticleCoverImage
@@ -286,22 +291,26 @@ export default function NewArticlePage() {
         </div>
 
         {/* Author and Category */}
-        <ArticleMetadata
-          authorId={authorId}
-          setAuthorId={setAuthorId}
-          user={user}
-          categoryId={categoryId}
-          setCategoryId={setCategoryId}
-          categories={categories}
-        />
+        <div className="border-b border-indigo-500/30 pb-8">
+          <ArticleMetadata
+            authorId={authorId}
+            setAuthorId={setAuthorId}
+            user={user}
+            categoryId={categoryId}
+            setCategoryId={setCategoryId}
+            categories={categories}
+          />
+        </div>
 
         {/* Blocks (Dynamic Zone) */}
-        <ArticleBlocks
-          blocks={blocks}
-          updateBlockContent={updateBlockContent}
-          removeBlock={removeBlock}
-          addBlock={addBlock}
-        />
+        <div className="pt-2">
+          <ArticleBlocks
+            blocks={blocks}
+            updateBlockContent={updateBlockContent}
+            removeBlock={removeBlock}
+            addBlock={addBlock}
+          />
+        </div>
       </form>
     </div>
   );

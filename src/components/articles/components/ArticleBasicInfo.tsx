@@ -23,7 +23,7 @@ export default function ArticleBasicInfo({
   return (
     <div className="grid grid-cols-2 gap-6">
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-400">title</label>
+        <label className="text-sm font-medium text-gray-400">Title</label>
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -33,7 +33,7 @@ export default function ArticleBasicInfo({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-400">description</label>
+        <label className="text-sm font-medium text-gray-400">Description</label>
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -48,7 +48,11 @@ export default function ArticleBasicInfo({
 }
 
 // Slug subcomponent
-ArticleBasicInfo.Slug = function ArticleSlug({ slug, setSlug, title }: SlugProps) {
+ArticleBasicInfo.Slug = function ArticleSlug({
+  slug,
+  setSlug,
+  title,
+}: SlugProps) {
   const generateSlug = () => {
     setSlug(
       title
@@ -60,7 +64,7 @@ ArticleBasicInfo.Slug = function ArticleSlug({ slug, setSlug, title }: SlugProps
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-400">slug</label>
+      <label className="text-sm font-medium text-gray-400">Slug</label>
       <div className="relative">
         <Input
           value={slug}

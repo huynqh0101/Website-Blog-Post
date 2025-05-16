@@ -28,7 +28,7 @@ export default function ArticleBlocks({
     <div className="pt-8">
       <div className="mb-4 flex justify-center">
         <div className="bg-[#24243c] px-4 py-2 rounded-full text-sm flex items-center">
-          <span>blocks</span>
+          <span>Blocks</span>
           <span className="ml-1.5 bg-gray-700 text-gray-300 text-xs rounded-full w-5 h-5 inline-flex items-center justify-center">
             {blocks.length}
           </span>

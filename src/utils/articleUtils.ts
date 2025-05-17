@@ -4,7 +4,7 @@ export function useArticleActions() {
   const router = useRouter();
 
   const navigateToEdit = (articleId: string) => {
-    router.push(`/dashbroad/edit-article/${articleId}`);
+    router.push(`/dashboard/edit-article/${articleId}`);
   };
 
   return {

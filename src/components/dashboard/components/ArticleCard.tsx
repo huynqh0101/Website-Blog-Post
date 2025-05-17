@@ -72,7 +72,7 @@ export const ArticleCard = ({
 
   return (
     <div className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow relative">
-      <Link href={`/dashbroad/article/${article.documentId}`} className="block">
+      <Link href={`/dashboard/article/${article.documentId}`} className="block">
         <div className="relative h-40 w-full">
           <Image
             src={`http://localhost:1337${article.cover.url}`}
@@ -106,7 +106,7 @@ export const ArticleCard = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  router.push(`/dashbroad/edit-article/${article.documentId}`);
+                  router.push(`/dashboard/edit-article/${article.documentId}`);
                 }}
                 className="p-1 bg-gray-100 rounded-full hover:bg-gray-200 transition-all"
                 title="Edit article"

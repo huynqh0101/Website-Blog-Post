@@ -3,24 +3,32 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/context/themeContext";
-import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/authContext";
+import { Toaster } from "react-hot-toast";
+import { AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
+import PageTransition from "@/components/PageTransition";
 
 export default function RootLayoutClient({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const pathname = usePathname();
+  const isDashboardRoute = pathname?.startsWith("/dashboard");
+
   return (
-    <AuthProvider>
-      <ThemeProvider>
+    <ThemeProvider>
+      <AuthProvider>
         <Navbar />
-        <main className="min-h-screen max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-          {children}
-          <Toaster />
-        </main>
-        <Footer />
-      </ThemeProvider>
-    </AuthProvider>
+        <AnimatePresence mode="wait">
+          <PageTransition key={pathname}>
+            <main>{children}</main>
+          </PageTransition>
+        </AnimatePresence>
+        {!isDashboardRoute && <Footer />}
+        <Toaster position="top-center" />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

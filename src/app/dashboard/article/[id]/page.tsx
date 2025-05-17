@@ -25,14 +25,12 @@ export default function ArticlePage() {
         // Bước 1: Lấy thông tin cơ bản của bài viết theo ID
         const basicArticle = await articleService.getArticleById(id);
 
-        if (!basicArticle || !basicArticle.slug) {
+        if (!basicArticle || !basicArticle.data.slug) {
           throw new Error("Article not found or missing slug");
         }
 
         // Bước 2: Lấy thông tin chi tiết của bài viết theo slug
-        const slug = basicArticle.slug;
-        console.log("slug", slug);
-
+        const slug = basicArticle.data.slug;
         const detailedArticle = await articleService.getArticleBySlug(slug);
         setArticle(detailedArticle as StrapiArticle);
       } catch (err) {
@@ -49,12 +47,12 @@ export default function ArticlePage() {
   }, [id]);
 
   const handleBack = () => {
-    router.push("/dashbroad");
+    router.push("/dashboard");
   };
 
   const handleEdit = () => {
     if (article?.documentId) {
-      router.push(`/dashbroad/edit-article/${article.documentId}`);
+      router.push(`/dashboard/edit-article/${article.documentId}`);
     }
   };
 

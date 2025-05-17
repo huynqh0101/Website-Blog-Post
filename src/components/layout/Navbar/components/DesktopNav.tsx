@@ -7,7 +7,8 @@ import {
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
 import { navigationItems } from "@/constants/navigation";
-
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 interface DesktopNavProps {
   isDarkMode: boolean;
   isSearchVisible: boolean;
@@ -21,6 +22,15 @@ export const DesktopNav = ({
   pathname,
   getNavItemStyles,
 }: DesktopNavProps) => {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleNavigation = (href: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    startTransition(() => {
+      router.push(href);
+    });
+  };
   return (
     <NavigationMenu
       className={`hidden lg:flex transition-all duration-300 relative ${

@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { BlockResult } from "@/types/media-block";
 import { Textarea } from "@/components/ui/textarea";
+import { useArticleContext } from "@/context/articleContext";
 import {
   ChevronDown,
   GripVertical,
@@ -12,9 +14,14 @@ import {
   Quote,
   Layers,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { uploadFiles } from "@/services/articleService";
+import {
+  fetchFileById,
+  getImageUrl,
+  fetchArticleBlocksMedia,
+} from "@/services/api";
 type BlockType = "rich-text" | "media" | "quote" | "slider";
 
 interface BlockData {
@@ -37,20 +44,112 @@ export default function ArticleBlocks({
   addBlock,
 }: ArticleBlocksProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [mediaContent, setMediaContent] = useState<BlockResult[]>([]);
+  const { articleId, isEditMode } = useArticleContext();
+
+  // Lấy dữ liệu ảnh khi component được mount
+  useEffect(() => {
+    async function loadMediaContent() {
+      if (!articleId || !isEditMode) return;
+
+      try {
+        console.log("Loading media for article:", articleId);
+        const mediaBlocks = await fetchArticleBlocksMedia(articleId);
+        setMediaContent(mediaBlocks);
+      } catch (error) {
+        console.error("Error loading media:", error);
+      }
+    }
+
+    loadMediaContent();
+  }, [articleId, isEditMode]);
+
+  // Hàm helper để tìm URL ảnh từ mediaContent cho một block cụ thể
+  const getMediaUrlForBlock = (blockId: number): string | null => {
+    const mediaBlock = mediaContent.find(
+      (item) => item.type === "media" && item.id === blockId
+    );
+
+    if (mediaBlock && mediaBlock.type === "media") {
+      return mediaBlock.fileUrl;
+    }
+
+    return null;
+  };
+
+  // Hàm helper để lấy slides cho một block slider cụ thể
+  const getSlidesForBlock = (
+    blockId: number
+  ): { id: number; url: string }[] => {
+    const sliderBlock = mediaContent.find(
+      (item) => item.type === "slider" && item.id === blockId
+    );
+
+    if (sliderBlock && sliderBlock.type === "slider") {
+      return sliderBlock.slides;
+    }
+
+    return [];
+  };
+
   const handleMediaUpload = async (index: number, file: File) => {
     try {
       setIsUploading(true);
 
-      // Sử dụng service chung
+      // Upload file và nhận ID
       const fileIds = await uploadFiles(file);
 
       if (fileIds && fileIds.length > 0) {
-        // Update block with file ID
-        updateBlockContent(index, "file", fileIds[0]);
+        // Fetch metadata đầy đủ của file để có thông tin hiển thị
+        const fileData = await fetchFileById(fileIds[0]);
+
+        // Cập nhật block với toàn bộ đối tượng file thay vì chỉ ID
+        // Điều này đảm bảo getImageUrl có đủ thông tin để tạo URL
+        updateBlockContent(index, "file", fileData);
         toast.success("Media uploaded successfully");
       }
     } catch (error) {
       console.error("Error in handleMediaUpload:", error);
+      toast.error("Failed to upload media");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const addToSlider = async (blockIndex: number, files: FileList) => {
+    try {
+      setIsUploading(true);
+
+      const fileIds = await uploadFiles(Array.from(files));
+      if (!fileIds || !fileIds.length) {
+        toast.error("Failed to upload images");
+        return;
+      }
+
+      // Fetch dữ liệu chi tiết cho mỗi ảnh đã upload
+      const fileDetails = await Promise.all(
+        fileIds.map((id) => fetchFileById(id))
+      );
+
+      // IMPORTANT: Always get the current block from the latest state
+      // Instead of directly referencing blocks[blockIndex]
+      updateBlockContent(blockIndex, "files", (currentFiles: any[]) => {
+        // Ensure currentFiles is an array with proper deep copy
+        const existingFiles = Array.isArray(currentFiles)
+          ? JSON.parse(JSON.stringify(currentFiles))
+          : [];
+
+        console.log("Existing files before update:", existingFiles);
+        console.log("New files to add:", fileDetails);
+
+        // Return a completely new array reference
+        return [...existingFiles, ...fileDetails];
+      });
+
+      toast.success(`Added ${fileDetails.length} images to slider`);
+    } catch (error) {
+      console.error("Error adding to slider:", error);
+      toast.error("Failed to add images to slider");
     } finally {
       setIsUploading(false);
     }
@@ -60,21 +159,40 @@ export default function ArticleBlocks({
     try {
       setIsUploading(true);
 
-      // Sử dụng service chung
+      // Upload files và nhận mảng ID
       const fileIds = await uploadFiles(Array.from(files));
 
       if (fileIds && fileIds.length > 0) {
-        // Update block with array of file IDs
-        updateBlockContent(index, "files", fileIds);
+        // Fetch metadata đầy đủ cho mỗi file
+        const fileDetails = await Promise.all(
+          fileIds.map((id) => fetchFileById(id))
+        );
+
+        // Update block với mảng đối tượng file đầy đủ
+        updateBlockContent(index, "files", fileDetails);
         toast.success("Slider images uploaded successfully");
       }
     } catch (error) {
       console.error("Error in handleSliderUpload:", error);
+      toast.error("Failed to upload slider images");
     } finally {
       setIsUploading(false);
     }
   };
+  const removeFromSlider = (blockIndex: number, imageIndex: number) => {
+    // Lấy mảng files hiện tại từ block
+    const currentFiles = blocks[blockIndex].files || [];
 
+    // Tạo mảng mới bằng cách loại bỏ ảnh ở vị trí imageIndex
+    const updatedFiles = [
+      ...currentFiles.slice(0, imageIndex),
+      ...currentFiles.slice(imageIndex + 1),
+    ];
+
+    // Cập nhật block với mảng files mới
+    updateBlockContent(blockIndex, "files", updatedFiles);
+    toast.success("Image removed from slider");
+  };
   return (
     <div className="pt-6">
       <div className="mb-6 flex justify-center">
@@ -132,51 +250,87 @@ export default function ArticleBlocks({
 
               {block.__component === "shared.media" && (
                 <div className="space-y-3">
-                  <div
-                    className="h-[140px] bg-blue-50 rounded-lg flex items-center justify-center cursor-pointer border border-dashed border-blue-200 hover:border-blue-400 transition-colors"
-                    onClick={() =>
-                      document.getElementById(`media-upload-${index}`)?.click()
-                    }
-                  >
-                    {block.file ? (
-                      <div className="text-center">
-                        <div className="bg-green-100 text-green-700 px-3 py-1.5 rounded-md mb-2 font-medium">
-                          Media successfully uploaded
-                        </div>
-                        <span className="text-xs text-blue-700 px-3 py-1 bg-blue-100 rounded-full">
-                          Click to change
-                        </span>
+                  {block.file ||
+                  (isEditMode && block.id && getMediaUrlForBlock(block.id)) ? (
+                    <div className="relative border rounded overflow-hidden">
+                      {(() => {
+                        // Ưu tiên sử dụng URL từ mediaContent (đã được tối ưu)
+                        const mediaUrl =
+                          isEditMode && block.id
+                            ? getMediaUrlForBlock(block.id)
+                            : null;
+                        // Fallback về cách cũ nếu không có dữ liệu từ mediaContent
+                        const imageUrl =
+                          mediaUrl || getImageUrl(block.file, "thumbnail");
+
+                        console.log("Media block image URL:", imageUrl);
+                        console.log("Media URL from context:", mediaUrl);
+
+                        return imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt={block.caption || "Media content"}
+                            className="w-full h-auto object-contain max-h-[200px]"
+                            onError={(e) => {
+                              console.error(
+                                `Error loading media image: ${imageUrl}`
+                              );
+                              e.currentTarget.src = "/placeholder-image.png"; // Fallback image
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-40 flex items-center justify-center bg-gray-100">
+                            <span className="text-gray-400">
+                              Image not available
+                            </span>
+                          </div>
+                        );
+                      })()}
+                      <div className="p-2 text-center">
+                        <Input
+                          placeholder="Add caption (optional)"
+                          className="bg-white border border-blue-200 text-slate-800 focus-visible:ring-1 focus-visible:ring-blue-500 mt-2"
+                          value={block.caption || ""}
+                          onChange={(e) =>
+                            updateBlockContent(index, "caption", e.target.value)
+                          }
+                        />
                       </div>
-                    ) : (
+                    </div>
+                  ) : (
+                    <div
+                      className="h-[140px] bg-blue-50 rounded-lg flex items-center justify-center cursor-pointer border border-dashed border-blue-200 hover:border-blue-400 transition-colors"
+                      onClick={() =>
+                        document
+                          .getElementById(`media-upload-${index}`)
+                          ?.click()
+                      }
+                    >
                       <div className="text-center">
-                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2">
-                          <Upload className="h-5 w-5 text-blue-600" />
+                        <div className="flex justify-center mb-2">
+                          <Upload className="h-6 w-6 text-blue-500" />
                         </div>
-                        <span className="text-sm text-blue-700">
-                          {isUploading ? "Uploading..." : "Upload media"}
-                        </span>
+                        <p className="text-blue-600 font-medium">
+                          Click to upload an image
+                        </p>
+                        <p className="text-slate-500 text-sm">
+                          JPG, PNG or GIF
+                        </p>
                       </div>
-                    )}
-                    <input
-                      type="file"
-                      id={`media-upload-${index}`}
-                      className="hidden"
-                      accept="image/*,video/*"
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          handleMediaUpload(index, e.target.files[0]);
-                        }
-                      }}
-                      disabled={isUploading}
-                    />
-                  </div>
-                  <Input
-                    placeholder="Caption"
-                    className="bg-white border border-blue-200 text-slate-800 focus-visible:ring-1 focus-visible:ring-blue-500"
-                    value={block.caption || ""}
-                    onChange={(e) =>
-                      updateBlockContent(index, "caption", e.target.value)
-                    }
+                    </div>
+                  )}
+
+                  <input
+                    type="file"
+                    id={`media-upload-${index}`}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleMediaUpload(index, e.target.files[0]);
+                      }
+                    }}
+                    disabled={isUploading}
                   />
                 </div>
               )}
@@ -204,33 +358,115 @@ export default function ArticleBlocks({
 
               {block.__component === "shared.slider" && (
                 <div className="space-y-3">
-                  <div
-                    className="h-[140px] bg-blue-50 rounded-lg flex items-center justify-center cursor-pointer border border-dashed border-blue-200 hover:border-blue-400 transition-colors"
-                    onClick={() =>
-                      document.getElementById(`slider-upload-${index}`)?.click()
-                    }
-                  >
-                    {block.files && block.files.length > 0 ? (
-                      <div className="text-center">
-                        <div className="bg-green-100 text-green-700 px-3 py-1.5 rounded-md mb-2 font-medium">
-                          {block.files.length} images uploaded
+                  {/* Preview existing images */}
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    {(() => {
+                      // Tạo mảng hiển thị kết hợp từ cả hai nguồn hình ảnh
+                      let displayImages: {
+                        type: "local" | "api";
+                        index: number;
+                        url: string;
+                        file?: any;
+                        id?: number;
+                      }[] = [];
+
+                      // Thêm hình ảnh từ block.files (hình ảnh đã upload) nếu có
+                      if (
+                        Array.isArray(block.files) &&
+                        block.files.length > 0
+                      ) {
+                        displayImages = block.files.map((file, idx) => ({
+                          type: "local",
+                          index: idx,
+                          url: getImageUrl(file, "thumbnail"),
+                          file,
+                        }));
+                      }
+                      // Thêm hình ảnh từ API nếu không có hình ảnh local
+                      else if (
+                        isEditMode &&
+                        block.id &&
+                        getSlidesForBlock(block.id).length > 0
+                      ) {
+                        displayImages = getSlidesForBlock(block.id).map(
+                          (slide, idx) => ({
+                            type: "api",
+                            index: idx,
+                            url: slide.url,
+                            id: slide.id,
+                          })
+                        );
+                      }
+
+                      // Hiển thị trạng thái trống nếu không có hình ảnh nào
+                      if (displayImages.length === 0) {
+                        return (
+                          <div className="col-span-2 text-center py-4 text-slate-500 bg-slate-50 rounded">
+                            Chưa có hình ảnh nào
+                          </div>
+                        );
+                      }
+
+                      // Hiển thị tất cả hình ảnh
+                      return displayImages.map((item, idx) => (
+                        <div
+                          key={`${item.type}-${item.index}`}
+                          className="relative group border rounded overflow-hidden"
+                        >
+                          <img
+                            src={item.url}
+                            alt={`Slide ${idx + 1}`}
+                            className="w-full h-auto object-contain max-h-[150px]"
+                            onError={(e) => {
+                              e.currentTarget.src = "/placeholder-image.png";
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (item.type === "local") {
+                                removeFromSlider(index, item.index);
+                              } else {
+                                toast.info(
+                                  "Chức năng xóa hình ảnh đã lưu sẽ được cập nhật sớm"
+                                );
+                              }
+                            }}
+                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
-                        <span className="text-xs text-blue-700 px-3 py-1 bg-blue-100 rounded-full">
-                          Click to change
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2">
-                          <Upload className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <span className="text-sm text-blue-700">
-                          {isUploading
-                            ? "Uploading..."
-                            : "Upload slider images"}
-                        </span>
-                      </div>
-                    )}
+                      ));
+                    })()}
+                  </div>
+
+                  {/* Upload button */}
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                      onClick={() =>
+                        document
+                          .getElementById(`slider-upload-${index}`)
+                          ?.click()
+                      }
+                      disabled={isUploading}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      {Array.isArray(block.files) && block.files.length > 0
+                        ? "Add More Images"
+                        : "Add Images"}
+                    </Button>
+                    <Input
+                      placeholder="Caption (optional)"
+                      className="bg-white flex-1 border border-blue-200"
+                      value={block.caption || ""}
+                      onChange={(e) =>
+                        updateBlockContent(index, "caption", e.target.value)
+                      }
+                    />
                     <input
                       type="file"
                       id={`slider-upload-${index}`}
@@ -239,7 +475,14 @@ export default function ArticleBlocks({
                       multiple
                       onChange={(e) => {
                         if (e.target.files && e.target.files.length > 0) {
-                          handleSliderUpload(index, e.target.files);
+                          if (
+                            Array.isArray(block.files) &&
+                            block.files.length > 0
+                          ) {
+                            addToSlider(index, e.target.files);
+                          } else {
+                            handleSliderUpload(index, e.target.files);
+                          }
                         }
                       }}
                       disabled={isUploading}

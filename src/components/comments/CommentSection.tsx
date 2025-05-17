@@ -108,7 +108,7 @@ export function CommentSection({ articleId }: CommentSectionProps) {
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Viết bình luận của bạn..."
+              placeholder="Write your comment..."
               className="w-full p-3 border rounded-lg min-h-[80px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-none"
               required
             />
@@ -136,7 +136,7 @@ export function CommentSection({ articleId }: CommentSectionProps) {
               disabled={isLoading}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition duration-200 font-medium"
             >
-              {isLoading ? "Đang gửi..." : "Gửi bình luận"}
+              {isLoading ? "Sending..." : "Submit Comment"}
             </button>
           </div>
         </div>
@@ -217,7 +217,7 @@ export function CommentSection({ articleId }: CommentSectionProps) {
                       </button>
                       <button className="flex items-center space-x-2 text-sm text-gray-500 hover:text-blue-600 transition duration-200">
                         <FaReply className="w-4 h-4" />
-                        <span>Trả lời</span>
+                        <span>Reply</span>
                       </button>
                     </div>
                   </div>
@@ -227,7 +227,7 @@ export function CommentSection({ articleId }: CommentSectionProps) {
           </div>
         ) : (
           <div className="text-center py-10 bg-gray-50 rounded-lg">
-            <p className="text-gray-500 text-lg">Chưa có bình luận nào.</p>
+            <p className="text-gray-500 text-lg">No comments yet.</p>
           </div>
         )}
       </div>

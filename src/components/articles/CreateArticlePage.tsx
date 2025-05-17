@@ -1,186 +1,70 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/authContext";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { useArticleForm } from "@/hooks/UseArticleFormProps";
+import { createArticle } from "@/services/articleService";
 
+// Components
 import ArticleHeader from "./components/ArticleHeader";
 import ArticleBasicInfo from "./components/ArticleBasicInfo";
 import ArticleCoverImage from "./components/ArticleCoverImage";
 import ArticleMetadata from "./components/ArticleMetadata";
 import ArticleBlocks from "./components/ArticleBlocks";
-import { uploadFiles } from "@/services/articleService";
 
-// Type definitions for our content
-type BlockType = "rich-text" | "media" | "quote" | "slider";
+export default function CreateArticlePage() {
+  const {
+    // Form state
+    title,
+    setTitle,
+    description,
+    setDescription,
+    slug,
+    setSlug,
+    categoryId,
+    setCategoryId,
+    type,
+    setType,
+    blocks,
+    setBlocks,
 
-interface BlockData {
-  __component: string;
-  id?: number;
-  [key: string]: any;
-}
+    // Image state
+    coverImage,
+    setCoverImage,
+    coverPreview,
+    setCoverPreview,
+    coverImageId,
+    setCoverImageId,
 
-type Category = {
-  id: number;
-  name: string;
-};
+    // UI state
+    categories,
+    isUploading,
+    isSubmitting,
+    setIsSubmitting,
 
-export default function NewArticlePage() {
-  const router = useRouter();
-  const { user } = useAuth();
+    // Functions
+    handleCoverImageUpload,
+    handleCoverImageChange,
+    addBlock,
+    removeBlock,
+    updateBlockContent,
+    formatBlocksForAPI,
+    handleCancel,
 
-  // Form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [slug, setSlug] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [type, setType] = useState("News");
-  const [blocks, setBlocks] = useState<BlockData[]>([]);
-
-  // Image upload state
-  const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [coverImageId, setCoverImageId] = useState<number | null>(null);
-
-  // Loading states
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Generate slug from title
-  useEffect(() => {
-    if (title) {
-      setSlug(
-        title
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
-      );
-    }
-  }, [title]);
-
-  const handleCoverImageUpload = async () => {
-    if (!coverImage) {
-      toast.error("Please select an image first");
-      return;
-    }
-
-    try {
-      setIsUploading(true);
-
-      // Sử dụng service chung uploadFiles
-      const fileIds = await uploadFiles(coverImage);
-
-      if (fileIds && fileIds.length > 0) {
-        setCoverImageId(fileIds[0]);
-        toast.success("Cover image uploaded successfully");
-      } else {
-        throw new Error("Failed to get file ID from server");
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image");
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  // Fetch categories when component mounts
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setIsLoadingCategories(true);
-        const response = await fetch("http://localhost:1337/api/categories", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch categories");
-        }
-
-        const data = await response.json();
-        setCategories(data.data || []);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        toast.error("Failed to load categories");
-      } finally {
-        setIsLoadingCategories(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  // Handle cover image selection
-  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setCoverImage(file);
-      setCoverPreview(URL.createObjectURL(file));
-      setCoverImageId(null);
-    }
-  };
-
-  // Add a new block
-  const addBlock = (type: BlockType) => {
-    let newBlock: BlockData;
-
-    switch (type) {
-      case "rich-text":
-        newBlock = {
-          __component: "shared.rich-text",
-          content: "",
-        };
-        break;
-      case "media":
-        newBlock = {
-          __component: "shared.media",
-          file: null,
-          caption: "",
-        };
-        break;
-      case "quote":
-        newBlock = {
-          __component: "shared.quote",
-          text: "",
-          author: "",
-        };
-        break;
-      case "slider":
-        newBlock = {
-          __component: "shared.slider",
-          files: [],
-        };
-        break;
-      default:
-        return;
-    }
-
-    setBlocks([...blocks, newBlock]);
-  };
-
-  // Remove a block
-  const removeBlock = (index: number) => {
-    const newBlocks = blocks.filter((_, i) => i !== index);
-    setBlocks(newBlocks);
-  };
+    // Router
+    router,
+  } = useArticleForm();
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const storedAuthorId = localStorage.getItem("authorDocumentId");
+
     if (!title || !description || !coverImageId) {
       toast.error("Please fill all required fields and upload a cover image");
       return;
     }
+
     if (!storedAuthorId) {
       toast.error("No author ID found. Please login again.");
       return;
@@ -189,104 +73,45 @@ export default function NewArticlePage() {
     try {
       setIsSubmitting(true);
 
-      // Chuyển đổi format của blocks nếu cần
-      const formattedBlocks = blocks.map((block) => {
-        if (block.__component === "shared.rich-text") {
-          return {
-            __component: block.__component,
-            body: block.content, // Đổi từ content thành body
-          };
-        } else if (block.__component === "shared.quote") {
-          return {
-            __component: block.__component,
-            title: block.text, // Đổi từ text thành title
-            body: block.author, // Đổi từ author thành body
-          };
-        } else if (block.__component === "shared.media") {
-          return {
-            __component: block.__component,
-            file: block.file, // Đảm bảo sử dụng trường file là số ID
-          };
-        } else if (block.__component === "shared.slider") {
-          return {
-            __component: block.__component,
-            files: block.files, // Đảm bảo files là mảng các số ID
-          };
-        }
-        // Giữ nguyên các loại block khác
-        return block;
-      });
+      const formattedBlocks = formatBlocksForAPI(blocks);
 
-      // Định nghĩa kiểu dữ liệu cho articleData
-      interface ArticleData {
-        data: {
-          title: string;
-          description: string;
-          slug: string;
-          type: string;
-          author: string | null;
-          category: number | null;
-          cover: number | null;
-          blocks?: any[]; // Thêm trường blocks là tùy chọn
-        };
-      }
-
-      // Khởi tạo articleData với kiểu đã định nghĩa
-      const articleData: ArticleData = {
-        data: {
-          title,
-          description,
-          slug,
-          author: storedAuthorId,
-          category: categoryId ? parseInt(categoryId) : null,
-          cover: coverImageId,
-          type: type || "blog",
-        },
+      type ArticleData = {
+        title: string;
+        description: string;
+        slug: string;
+        author: string;
+        category: number | null;
+        cover: number;
+        type: string;
+        blocks?: any[];
       };
 
-      // Chỉ thêm blocks vào khi có dữ liệu
+      // Trong hàm handleSubmit
+      const articleData: ArticleData = {
+        title,
+        description,
+        slug,
+        author: storedAuthorId,
+        category: categoryId ? parseInt(categoryId) : null,
+        cover: coverImageId,
+        type: type || "blog",
+      };
+
       if (formattedBlocks.length > 0) {
-        articleData.data.blocks = formattedBlocks;
+        articleData.blocks = formattedBlocks;
       }
 
       console.log("Sending data:", JSON.stringify(articleData));
 
-      // Phần còn lại của mã không thay đổi
-      const response = await fetch("http://localhost:1337/api/articles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(articleData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error response details:", errorData);
-        console.error("Error status:", response.status);
-        throw new Error(
-          `Failed to create article: ${
-            errorData.error?.message || "Unknown error"
-          }`
-        );
-      }
-
-      const data = await response.json();
+      const data = await createArticle(articleData);
       toast.success("Article created successfully");
-      router.push(`/dashbroad/article/${data.data.id}`);
+      router.push(`/dashboard/article/${data.data.id}`);
     } catch (error) {
       console.error("Error creating article:", error);
       toast.error("Failed to create article");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Update block content
-  const updateBlockContent = (index: number, key: string, value: any) => {
-    const newBlocks = [...blocks];
-    newBlocks[index][key] = value;
-    setBlocks(newBlocks);
   };
 
   return (
@@ -298,7 +123,7 @@ export default function NewArticlePage() {
         <ArticleHeader
           isSubmitting={isSubmitting}
           coverImageId={coverImageId}
-          onCancel={() => router.push("/dashbroad")}
+          onCancel={handleCancel}
         />
 
         {/* Basic info section */}
@@ -323,7 +148,11 @@ export default function NewArticlePage() {
             coverImage={coverImage}
             coverImageId={coverImageId}
             isUploading={isUploading}
-            handleCoverImageUpload={handleCoverImageUpload}
+            handleCoverImageUpload={() =>
+              coverImage
+                ? handleCoverImageUpload(coverImage)
+                : Promise.resolve()
+            }
             handleCoverImageChange={handleCoverImageChange}
           />
         </div>

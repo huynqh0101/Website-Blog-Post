@@ -31,8 +31,8 @@ export const RecentArticles = ({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-medium">Recent Articles</h2>
         <Link
-          href="/dashbroad/my-articles"
-          className="text-sm text-[#3a5b22] hover:underline"
+          href="/dashboard/my-articles"
+          className="text-sm text-blue-600 hover:text-indigo-500 hover:underline"
         >
           View all
         </Link>
@@ -40,7 +40,7 @@ export const RecentArticles = ({
 
       {isLoading ? (
         <div className="flex justify-center p-6">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#3a5b22]"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
         </div>
       ) : error ? (
         <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>

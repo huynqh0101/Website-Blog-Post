@@ -8,7 +8,7 @@ export const navigationItems = [
     name: "News",
     href: "/news",
     dropdownItems: [
-      { name: "Latest News", href: "/news" },
+      { name: "Latest News", href: "/articles" },
       { name: "Featured", href: "/news/featured" },
       { name: "Popular", href: "/news/popular" },
       { name: "Categories", href: "/news/categories" },

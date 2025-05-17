@@ -47,10 +47,13 @@ export interface Article {
     };
   };
   cover?: {
+    url?: string;
     formats?: {
       medium?: {
         url: string;
       };
+      small?: { url: string };
+      thumbnail?: { url: string };
     };
     alternativeText?: string;
   };

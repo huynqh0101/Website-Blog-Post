@@ -20,10 +20,10 @@ export const useAuthorProfile = ({
   // Validate data
   const validateData = (token: string | null) => {
     if (!token) {
-      throw new Error("Token không tồn tại");
+      throw new Error("Token does not exist.");
     }
     if (!authorData?.data || authorData.data.length === 0) {
-      throw new Error("Không tìm thấy thông tin tác giả");
+      throw new Error("Author information not found.");
     }
   };
 
@@ -41,7 +41,7 @@ export const useAuthorProfile = ({
     try {
       // Validate new email format
       if (!isValidEmail(newEmail)) {
-        throw new Error("Email không hợp lệ");
+        throw new Error("The email address is invalid.");
       }
 
       // Find user with correct filter syntax
@@ -59,14 +59,14 @@ export const useAuthorProfile = ({
       if (!findUserResponse.ok) {
         const errorData = await findUserResponse.json();
         console.error("User find error:", errorData);
-        throw new Error("Không thể tìm thấy thông tin user");
+        throw new Error("User information could not be found.");
       }
 
       const users = await findUserResponse.json();
       console.log("Found users:", users); // Debug log
 
       if (!users || users.length === 0) {
-        throw new Error("Không tìm thấy user với email này");
+        throw new Error("No user found with this email.");
       }
 
       const userId = users[0].id;
@@ -91,7 +91,7 @@ export const useAuthorProfile = ({
         const errorData = await updateUserResponse.json();
         console.error("User update error:", errorData);
         throw new Error(
-          `Không thể cập nhật email của user: ${
+          `Unable to update user's email: ${
             errorData.error?.message || "Unknown error"
           }`
         );
@@ -100,7 +100,7 @@ export const useAuthorProfile = ({
       const updatedUser = await updateUserResponse.json();
       console.log("User updated successfully:", updatedUser);
       logout();
-      toast.success("Cập nhật email thành công! Vui lòng đăng nhập lại.", {
+      toast.success("Email updated successfully! Please log in again.", {
         duration: 5000,
       });
       router.push("/login");
@@ -139,9 +139,9 @@ export const useAuthorProfile = ({
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Lỗi cập nhật:", errorData);
+      console.error("Update error:", errorData);
       throw new Error(
-        errorData.error?.message || "Không thể cập nhật thông tin"
+        errorData.error?.message || "Unable to update information."
       );
     }
   };
@@ -160,7 +160,7 @@ export const useAuthorProfile = ({
     );
 
     if (!refreshResponse.ok) {
-      throw new Error("Không thể lấy thông tin mới nhất");
+      throw new Error("Unable to retrieve the latest information.");
     }
 
     const refreshedData = await refreshResponse.json();
@@ -189,9 +189,9 @@ export const useAuthorProfile = ({
     });
 
     if (!avatarResponse.ok) {
-      console.error("Lỗi upload avatar:", await avatarResponse.json());
+      console.error("Avatar upload error:", await avatarResponse.json());
       toast.error(
-        "Cập nhật thông tin thành công nhưng không thể upload avatar"
+        "Information updated successfully, but avatar upload failed."
       );
     }
   };
@@ -209,13 +209,13 @@ export const useAuthorProfile = ({
       await refreshAuthorData(token!);
       await uploadAvatar(token!);
 
-      toast.success("Cập nhật thông tin thành công!");
+      toast.success("Information updated successfully!");
     } catch (error) {
       console.error("Lỗi:", error);
       toast.error(
         error instanceof Error
           ? error.message
-          : "Đã xảy ra lỗi khi cập nhật thông tin"
+          : "Error occurred during information update."
       );
     } finally {
       setLoading(false);

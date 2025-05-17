@@ -31,8 +31,6 @@ export const SideMenuByAnima = (): JSX.Element => {
     }
   }, []);
 
-  // Loại bỏ custom event useEffect
-
   const handleLogout = () => {
     logout();
     router.push("/");
@@ -42,40 +40,40 @@ export const SideMenuByAnima = (): JSX.Element => {
   const menuItems = useMemo(
     () => [
       {
-        href: "/dashbroad",
+        href: "/dashboard",
         icon: <LayoutDashboardIcon className="w-5 h-5" />,
         label: "Dashboard",
-        isActive: pathname === "/dashbroad",
+        isActive: pathname === "/dashboard",
       },
       {
-        href: "/dashbroad/my-articles",
+        href: "/dashboard/my-articles",
         icon: <FileTextIcon className="w-5 h-5" />,
         label: "My Articles",
-        isActive: pathname === "/dashbroad/my-articles",
+        isActive: pathname === "/dashboard/my-articles",
       },
       {
-        href: "/dashbroad/new-article",
+        href: "/dashboard/new-article",
         icon: <PenToolIcon className="w-5 h-5" />,
         label: "Write New",
-        isActive: pathname === "/dashbroad/new-article",
+        isActive: pathname === "/dashboard/new-article",
       },
       {
-        href: "/dashbroad/statistics",
+        href: "/dashboard/statistics",
         icon: <BarChartIcon className="w-5 h-5" />,
         label: "Statistics",
-        isActive: pathname === "/dashbroad/statistics",
+        isActive: pathname === "/dashboard/statistics",
       },
       {
-        href: "/dashbroad/guidelines",
+        href: "/dashboard/guidelines",
         icon: <BookIcon className="w-5 h-5" />,
         label: "Writing Guidelines",
-        isActive: pathname === "/dashbroad/guidelines",
+        isActive: pathname === "/dashboard/guidelines",
       },
       {
-        href: "/dashbroad/settings",
+        href: "/dashboard/settings",
         icon: <SettingsIcon className="w-5 h-5" />,
         label: "Settings",
-        isActive: pathname === "/dashbroad/settings",
+        isActive: pathname === "/dashboard/settings",
       },
     ],
     [pathname]
@@ -101,9 +99,9 @@ export const SideMenuByAnima = (): JSX.Element => {
         >
           {!isCollapsed && (
             <div className="flex items-center">
-              <BookIcon className="w-6 h-6 text-[#3a5b22]" />
+              <BookIcon className="w-6 h-6 text-blue-600" />
               <div className="ml-2.5">
-                <h1 className="font-['Inter',sans-serif] font-semibold text-lg text-[#3a5b22] tracking-tight">
+                <h1 className="font-['Inter',sans-serif] font-semibold text-lg text-blue-600 tracking-tight">
                   Author Panel
                 </h1>
               </div>
@@ -135,8 +133,8 @@ export const SideMenuByAnima = (): JSX.Element => {
                   href={item.href}
                   className={`flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 ${
                     item.isActive
-                      ? "bg-[#3a5b22] text-white hover:bg-[#4a7029]"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-[#3a5b22]"
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                   } ${isCollapsed ? "justify-center" : ""}`}
                 >
                   <span className="flex items-center justify-center w-5 h-5">

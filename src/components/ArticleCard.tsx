@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Article } from "@/types/article";
-
+import { FaCalendarAlt } from "react-icons/fa";
 interface ArticleCardProps {
   article: Article;
   onArticleClick: (article: Article) => void;
 }
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("vi-VN", {
+  return new Date(dateString).toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -18,6 +18,32 @@ const formatDate = (dateString: string) => {
 export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
   const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 
+  // Helper function để lấy URL ảnh tốt nhất có sẵn
+  const getCoverImageUrl = () => {
+    if (!article.cover) return null;
+
+    // Kiểm tra các format theo thứ tự ưu tiên
+    if (article.cover.formats?.medium?.url) {
+      return `${API_URL}${article.cover.formats.medium.url}`;
+    }
+    if (article.cover.formats?.small?.url) {
+      return `${API_URL}${article.cover.formats.small.url}`;
+    }
+    if (article.cover.formats?.thumbnail?.url) {
+      return `${API_URL}${article.cover.formats.thumbnail.url}`;
+    }
+
+    // Nếu không có format nào, dùng URL gốc
+    if (article.cover.url) {
+      return `${API_URL}${article.cover.url}`;
+    }
+
+    // Không có URL nào
+    return null;
+  };
+
+  const coverImageUrl = getCoverImageUrl();
+
   return (
     <Link
       href={`/articles/${article.slug}`}
@@ -25,10 +51,10 @@ export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
       className="group w-full bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
     >
       <div className="relative overflow-hidden">
-        {article.cover?.formats?.medium?.url ? (
+        {coverImageUrl ? (
           <Image
-            src={`${API_URL}${article.cover.formats.medium.url}`}
-            alt={article.cover.alternativeText || article.title}
+            src={coverImageUrl}
+            alt={article.cover?.alternativeText || article.title}
             width={500}
             height={300}
             className="object-cover w-full aspect-[16/9] transform transition-transform duration-300 group-hover:scale-110"
@@ -40,6 +66,7 @@ export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
         )}
       </div>
 
+      {/* Phần còn lại của component giữ nguyên */}
       <div className="p-4 md:p-6 space-y-3 relative">
         <div className="absolute -top-8 right-4 transform transition-transform duration-300 group-hover:scale-110">
           {article.author?.avatar?.formats?.thumbnail?.url ? (
@@ -64,7 +91,8 @@ export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
         </h3>
 
         <div className="flex justify-between items-center text-xs text-muted-foreground">
-          <time className="group-hover:text-primary/80 transition-colors duration-300">
+          <time className="group-hover:text-primary/80 transition-colors duration-300 flex items-center gap-1">
+            <FaCalendarAlt className="text-gray-400 group-hover:text-primary/80 transition-colors" />
             {formatDate(article.publishedAt)}
           </time>
           {article.author && (

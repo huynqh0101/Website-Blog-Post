@@ -1,7 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Inter, Manrope } from "next/font/google";
-import RootLayoutClient from "./RootLayoutClient"; // Verify this file exists in the same directory
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+
+// Lazy load RootLayoutClient
+const RootLayoutClient = dynamic(() => import("./RootLayoutClient"), {
+  loading: () => <div>Loading...</div>,
+  ssr: true, // Set to false if you want client-side only rendering
+});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,7 +45,9 @@ export default function RootLayout({
         className={`${inter.variable} ${manrope.variable} font-sans`}
         suppressHydrationWarning
       >
-        <RootLayoutClient>{children}</RootLayoutClient>
+        <Suspense fallback={<div>Loading application...</div>}>
+          <RootLayoutClient>{children}</RootLayoutClient>
+        </Suspense>
       </body>
     </html>
   );

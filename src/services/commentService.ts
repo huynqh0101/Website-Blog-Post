@@ -10,8 +10,6 @@ export const commentService = {
         console.error("No JWT token found");
         return [];
       }
-
-      console.log("Fetching comments for article ID:", articleId);
       const res = await fetch(
         `${API_URL}/api/comments?filters[article_id][$eq]=${articleId}&populate[user][populate]=avatar`,
         {
@@ -24,7 +22,6 @@ export const commentService = {
       if (!res.ok) return [];
 
       const response = await res.json();
-      console.log("Comments response:", response);
       return response.data;
     } catch (error) {
       console.error("Error fetching comments:", error);

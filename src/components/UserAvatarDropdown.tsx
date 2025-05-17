@@ -70,7 +70,7 @@ export default function UserAvatarDropdown({
             {userRole === "author" && (
               <button
                 onClick={() => {
-                  router.push("/dashbroad");
+                  router.push("/dashboard");
                   setOpen(false);
                 }}
                 className={`flex items-center space-x-2 w-full px-4 py-2 text-sm

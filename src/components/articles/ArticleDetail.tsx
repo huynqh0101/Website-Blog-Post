@@ -23,7 +23,6 @@ export default function ArticleDetail({
   article: ArticleDetailType;
 }) {
   const [authorData, setAuthorData] = useState<AuthorData | null>(null);
-
   useEffect(() => {
     const savedAuthor = localStorage.getItem("currentAuthor");
     if (savedAuthor) {
@@ -74,18 +73,29 @@ export default function ArticleDetail({
               pagination={{ clickable: true }}
               className="w-full rounded-lg"
             >
-              {block.files.map((file: any, index: number) => (
-                <SwiperSlide key={`slide-${block.id}-${index}`}>
-                  <div className="aspect-video relative">
-                    <Image
-                      src={`${API_URL}${file.url}`}
-                      alt={file.alternativeText || `Slide ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
+              {/* Thêm kiểm tra block.files tồn tại và là mảng */}
+              {block.files &&
+              Array.isArray(block.files) &&
+              block.files.length > 0 ? (
+                block.files.map((file: any, index: number) => (
+                  <SwiperSlide key={`slide-${block.id}-${index}`}>
+                    <div className="aspect-video relative">
+                      <Image
+                        src={`${API_URL}${file.url}`}
+                        alt={file.alternativeText || `Slide ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))
+              ) : (
+                <SwiperSlide>
+                  <div className="aspect-video relative flex items-center justify-center bg-gray-100">
+                    <p className="text-gray-500">No images in this slider</p>
                   </div>
                 </SwiperSlide>
-              ))}
+              )}
             </Swiper>
           </div>
         );
@@ -136,11 +146,23 @@ export default function ArticleDetail({
       </header>
 
       {/* Cover Image */}
-      {article.cover?.formats?.medium?.url && (
+      {article.cover && (
         <div className="max-w-4xl mx-auto mb-8 relative aspect-video">
           <Image
-            src={`${API_URL}${article.cover.formats.medium.url}`}
-            alt={article.cover.alternativeText || article.title}
+            src={
+              article.cover.formats?.medium?.url
+                ? `${API_URL}${article.cover.formats.medium.url}`
+                : article.cover.formats?.small?.url
+                ? `${API_URL}${article.cover.formats.small.url}`
+                : article.cover.formats?.thumbnail?.url
+                ? `${API_URL}${article.cover.formats.thumbnail.url}`
+                : article.cover.url
+                ? `${API_URL}${article.cover.url}`
+                : "/placeholder-image.png"
+            }
+            alt={
+              article.cover.alternativeText || article.title || "Article cover"
+            }
             fill
             className="object-cover rounded-xl"
           />

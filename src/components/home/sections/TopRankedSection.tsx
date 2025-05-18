@@ -14,11 +14,11 @@ export const TopRankedSection = ({ articles }: TopRankedSectionProps) => {
   return (
     <div className="mb-8">
       <div className="border-t border-b border-[#dfdfdf] h-[5px] relative mb-4">
-        <div className="absolute top-0 left-0 w-10 h-[5px] bg-[#f4796c]"></div>
+        <div className="absolute top-0 left-0 w-10 h-[5px]  bg-blue-600"></div>
         <img
           className="absolute top-0 left-9 w-2.5 h-1.5"
           alt="Mask group"
-          src="/mask-group-2.svg"
+          src="/mask-group.svg"
         />
       </div>
       <h2 className="text-[22px] font-bold text-[#183354] mb-6">Top Ranked</h2>

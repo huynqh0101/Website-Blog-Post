@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChevronRightIcon, UserIcon } from "lucide-react";
-import { SectionHeader } from "../SectionHeader";
 
 interface PoliticsSectionProps {
   articles: Array<{
@@ -22,7 +21,7 @@ export const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
       <div className="flex items-center mb-4">
         <h2 className="text-[22px] font-bold text-[#183354]">Politics</h2>
         <div className="flex-1 ml-4 border-t border-b border-[#dfdfdf] h-[5px] relative">
-          <div className="absolute top-0 left-0 w-10 h-[5px] bg-[#f4796c]"></div>
+          <div className="absolute top-0 left-0 w-10 h-[5px]  bg-blue-600"></div>
           <img
             className="absolute top-0 left-9 w-2.5 h-1.5"
             alt="Mask group"
@@ -42,7 +41,7 @@ export const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
               <div className="text-[13px] text-[#6d757f] font-normal mb-2">
                 {mainArticle.category}
               </div>
-              <h3 className="text-xl font-extrabold text-[#183354] mb-4">
+              <h3 className="text-xl font-extrabold text-[#183354] mb-4 hover:text-[#22408a] hover:underline cursor-pointer transition-colors duration-200">
                 {mainArticle.title}
               </h3>
               <div className="flex items-center gap-4 mb-4">
@@ -67,12 +66,12 @@ export const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
               </p>
               <Button
                 variant="outline"
-                className="w-[138px] h-9 rounded border border-[#cfcfcf] flex items-center gap-2"
+                className="w-[138px] h-9 rounded border border-[#cfcfcf] flex items-center gap-2 group hover:border-[#22408a] transition-colors duration-200"
               >
-                <span className="text-sm font-medium text-[#183354]">
+                <span className="text-sm font-medium text-[#183354] group-hover:text-[#22408a] group-hover:underline transition-colors duration-200">
                   READ MORE
                 </span>
-                <ChevronRightIcon className="w-2.5 h-2.5" />
+                <ChevronRightIcon className="w-2.5 h-2.5 group-hover:text-[#22408a] transition-colors duration-200" />
               </Button>
             </div>
           </div>
@@ -89,7 +88,7 @@ export const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
                     : ""
                 }`}
               >
-                <h3 className="text-lg font-semibold text-[#183354] mb-2">
+                <h3 className="text-lg font-semibold text-[#183354] mb-2 hover:text-[#22408a] hover:underline cursor-pointer transition-colors duration-200">
                   {article.title}
                 </h3>
                 <div className="flex items-center gap-1">

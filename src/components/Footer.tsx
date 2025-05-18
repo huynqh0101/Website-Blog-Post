@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Logo } from "./layout/Navbar/components/Logo";
+import BannerSlider from "./home/BannerSlider";
 import {
   contentLinks,
   resourceLinks,
@@ -9,82 +9,18 @@ import {
 } from "@/constants/footerLinks";
 import Image from "next/image";
 import { UnderlineDecoration } from "./ui/underLine";
-const BannerSlider = () => {
-  const [currentBanner, setCurrentBanner] = useState(0);
-  const banners = ["/banner/banner1.jpg", "/banner/banner2.jpg"];
-
-  useEffect(() => {
-    // Tự động chuyển banner mỗi 5 giây
-    const interval = setInterval(() => {
-      setCurrentBanner((prev) => (prev === 0 ? 1 : 0));
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-  return (
-    <div className="relative h-64 w-full overflow-hidden rounded-lg">
-      {banners.map((banner, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-            index === currentBanner ? "opacity-100 z-10" : "opacity-0 z-0"
-          }`}
-        >
-          <Image
-            src={banner}
-            alt={`DAILY INSIGHT Banner ${index + 1}`}
-            fill
-            sizes="100vw"
-            priority={index === 0}
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-10"></div>{" "}
-          {/* Tăng độ mờ để text dễ đọc hơn */}
-        </div>
-      ))}
-
-      {/* Copyright text đè lên banner */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-        <h2 className="text-white font-bold text-3xl mt-3 tracking-wide drop-shadow-lg">
-          STAY INFORMED
-        </h2>
-        <div className="mt-4 flex items-center">
-          <span className="h-[1px] w-6 bg-white/60 mr-3"></span>
-          <p className="text-white/80 text-xs font-light">
-            © {new Date().getFullYear()} DAILY INSIGHT
-          </p>
-          <span className="h-[1px] w-6 bg-white/60 ml-3"></span>
-        </div>
-      </div>
-
-      {/* Chỉ số banner (dots) */}
-      <div className="absolute bottom-4 left-0 right-0 flex justify-center z-20">
-        {banners.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 mx-1 rounded-full ${
-              index === currentBanner ? "bg-white" : "bg-white/50"
-            }`}
-            onClick={() => setCurrentBanner(index)}
-            aria-label={`Go to banner ${index + 1}`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
 
 const Footer = (): JSX.Element => {
   return (
     <>
       <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-500">
-        <BannerSlider />
+        <BannerSlider height="15rem" />
       </div>
       <footer className="w-full bg-gray-50 py-16 border-t border-gray-200">
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Logo and description column */}
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 lg:col-span-1">
               <div className="flex items-center">
                 <div className="flex flex-col">
                   <Logo />
@@ -141,8 +77,8 @@ const Footer = (): JSX.Element => {
               </div>
             </div>
 
-            {/* Content column */}
-            <div className="flex flex-col space-y-4">
+            {/* Content column - adjusted for better alignment */}
+            <div className="flex flex-col space-y-4 md:items-start">
               <div className="space-y-2">
                 <h3 className="font-bold text-gray-800 text-xl">Content</h3>
                 <UnderlineDecoration />
@@ -152,7 +88,7 @@ const Footer = (): JSX.Element => {
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                      className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
                     >
                       {link.title}
                     </Link>
@@ -161,8 +97,8 @@ const Footer = (): JSX.Element => {
               </ul>
             </div>
 
-            {/* Resources column */}
-            <div className="flex flex-col space-y-4">
+            {/* Resources column - adjusted for better alignment */}
+            <div className="flex flex-col space-y-4 md:items-start">
               <div className="space-y-2">
                 <h3 className="font-bold text-gray-800 text-xl">Resources</h3>
                 <UnderlineDecoration />
@@ -181,8 +117,8 @@ const Footer = (): JSX.Element => {
               </ul>
             </div>
 
-            {/* Company column */}
-            <div className="flex flex-col space-y-4">
+            {/* Company column - adjusted for better alignment */}
+            <div className="flex flex-col space-y-4 md:items-start">
               <div className="space-y-2">
                 <h3 className="font-bold text-gray-800 text-xl">Company</h3>
                 <UnderlineDecoration />
@@ -201,8 +137,8 @@ const Footer = (): JSX.Element => {
               </ul>
             </div>
 
-            {/* Follow Us column */}
-            <div className="flex flex-col space-y-4">
+            {/* Follow Us column - adjusted for better alignment */}
+            <div className="flex flex-col space-y-4 md:items-start">
               <div className="space-y-2">
                 <h3 className="font-bold text-gray-800 text-xl">Connect</h3>
                 <UnderlineDecoration />
@@ -212,11 +148,11 @@ const Footer = (): JSX.Element => {
                   <li key={index}>
                     <a
                       href={link.href}
-                      className="text-gray-600 flex items-center gap-2 hover:text-blue-600 transition-colors"
+                      className="text-gray-600 flex items-center gap-2 hover:text-blue-600 hover:underline transition-colors"
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      {link.icon}
+                      <span className="text-blue-600">{link.icon}</span>
                       {link.title}
                     </a>
                   </li>

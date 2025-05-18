@@ -22,15 +22,8 @@ export const DesktopNav = ({
   pathname,
   getNavItemStyles,
 }: DesktopNavProps) => {
-  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const handleNavigation = (href: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    startTransition(() => {
-      router.push(href);
-    });
-  };
   return (
     <NavigationMenu
       className={`hidden lg:flex transition-all duration-300 relative ${
@@ -51,20 +44,37 @@ export const DesktopNav = ({
           >
             {item.dropdownItems ? (
               <>
-                <NavigationMenuTrigger
-                  className={`relative px-6 py-2 transition-colors duration-300 font-medium tracking-wide text-[15px]
-                    after:absolute after:content-[''] after:bottom-0 after:left-0 after:w-full after:h-[2px]
-                    after:bg-primary after:transition-all after:duration-300
-                    after:origin-center after:transform after:scale-x-0
-                     hover:after:scale-x-100 data-[state=open]:bg-transparent
-                    ${
-                      isDarkMode
-                        ? "text-slate-200 hover:text-white data-[state=open]:text-white bg-transparent" // Thay đổi từ slate-300 thành slate-200
-                        : "text-slate-600 hover:text-primary data-[state=open]:text-primary"
-                    }`}
-                >
-                  {item.name}
-                </NavigationMenuTrigger>
+                <div className="relative flex flex-col items-center">
+                  {/* Thêm Link bên trong để cho phép điều hướng khi click vào menu chính */}
+                  <NavigationMenuTrigger
+                    className={`relative px-6 py-2 transition-colors duration-300 font-medium tracking-wide text-[15px]
+                      after:absolute after:content-[''] after:bottom-0 after:left-0 after:w-full after:h-[2px]
+                      after:bg-primary after:transition-all after:duration-300
+                      after:origin-center after:transform after:scale-x-0
+                      hover:after:scale-x-100 data-[state=open]:bg-transparent
+                      ${
+                        isDarkMode
+                          ? "text-slate-200 hover:text-white data-[state=open]:text-white bg-transparent"
+                          : "text-slate-600 hover:text-primary data-[state=open]:text-primary"
+                      }`}
+                    onClick={(e) => {
+                      // Cho phép nhấn vào tên menu để điều hướng
+                      // Chỉ ngăn hành vi mặc định nếu click vào phần dropdown indicator
+                      const target = e.target as HTMLElement;
+                      // Nếu không phải click vào dropdown indicator (caret)
+                      if (
+                        !target.closest('[data-dropdown-indicator="true"]') &&
+                        item.href
+                      ) {
+                        e.preventDefault();
+                        router.push(item.href);
+                      }
+                    }}
+                  >
+                    {item.name}
+                  </NavigationMenuTrigger>
+                </div>
+
                 <NavigationMenuContent>
                   <ul
                     className={`min-w-[180px] p-2 space-y-1 rounded-md shadow-lg backdrop-blur-sm
@@ -83,11 +93,11 @@ export const DesktopNav = ({
                               ${
                                 isDarkMode
                                   ? pathname === dropItem.href
-                                    ? "text-white bg-slate-800/60" // Active dropdown item in dark mode
-                                    : "text-slate-200 hover:bg-slate-800/40 hover:text-white" // Normal dropdown item in dark mode
+                                    ? "text-white bg-slate-800/60"
+                                    : "text-slate-200 hover:bg-slate-800/40 hover:text-white"
                                   : pathname === dropItem.href
-                                  ? "text-primary bg-slate-50" // Active dropdown item in light mode
-                                  : "text-slate-600 hover:bg-slate-50 hover:text-primary" // Normal dropdown item in light mode
+                                  ? "text-primary bg-slate-50"
+                                  : "text-slate-600 hover:bg-slate-50 hover:text-primary"
                               }
                                `}
                         >

@@ -11,7 +11,7 @@ export default function Home() {
 
       {/* Scroll to top button */}
       <Button
-        className="fixed w-9 h-9 bottom-[118px] right-[69px] bg-[#1b1128] rounded-[18px] p-0 shadow-[0px_6px_32px_-1px_#00000014] flex items-center justify-center"
+        className="fixed w-9 z-40 h-9 bottom-[118px] right-[69px] bg-[#1b1128] rounded-[18px] p-0 shadow-[0px_6px_32px_-1px_#00000014] flex items-center justify-center"
         aria-label="Scroll to top"
       >
         <ArrowUpIcon size={14} className="text-white" />
@@ -19,7 +19,7 @@ export default function Home() {
 
       {/* Message button */}
       <Button
-        className="fixed w-10 h-10 bottom-[40px] right-[70px] bg-[#f4796c] rounded-md p-0 flex items-center justify-center"
+        className="fixed z-40 w-10 h-10 bottom-[40px] right-[70px] bg-[#2563eb] rounded-md p-0 flex items-center justify-center"
         aria-label="Message"
       >
         <MessageSquareIcon size={16} className="text-white" />

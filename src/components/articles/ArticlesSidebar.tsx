@@ -3,11 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Search } from "lucide-react";
 import newsData from "@/constants/newsData";
+import BannerSlider from "../home/BannerSlider";
 
 export const ArticlesSidebar = () => {
   // Sử dụng topStoriesArticles thay vì topRankedArticles cho phần Popular
   // vì topStoriesArticles có trường image
-  const { topRankedArticles, topStoriesArticles } = newsData;
+  const { topRankedArticles, topStoriesArticles, articlesNews } = newsData;
 
   return (
     <div className="space-y-8">
@@ -29,7 +30,7 @@ export const ArticlesSidebar = () => {
         <h3 className="text-lg font-bold mb-4">Popular</h3>
         <div className="space-y-4">
           {/* Sử dụng topStoriesArticles vì chúng có trường image */}
-          {topStoriesArticles.slice(0, 4).map((article) => (
+          {articlesNews.slice(0, 4).map((article) => (
             <div key={article.id} className="flex gap-4 group">
               <div className="relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0">
                 <Image
@@ -108,12 +109,20 @@ export const ArticlesSidebar = () => {
       {/* Advertisement - Không thay đổi */}
       <div className="bg-white dark:bg-slate-800 p-5 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-bold mb-4">Advertisement</h3>
-        <div className="relative h-[250px] w-[260px] bg-gray-100 dark:bg-slate-700 rounded flex items-center justify-center overflow-hidden">
-          <Image
-            src="/advm.jpg"
-            alt="Advertisement"
-            fill
-            className="object-cover hover:scale-105 transition-transform duration-300"
+        <div className="relative overflow-hidden rounded">
+          <BannerSlider
+            banners={[
+              "/images/advertisement/advm.jpg",
+              "/images/advertisement/advm2.jpg",
+              "/images/advertisement/advm3.jpg",
+              "/images/advertisement/advm4.png",
+            ]}
+            interval={5000}
+            height="240px"
+            width="100%"
+            title={null}
+            copyright={null}
+            className="rounded"
           />
         </div>
       </div>

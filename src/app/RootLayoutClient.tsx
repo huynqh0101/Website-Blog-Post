@@ -1,7 +1,7 @@
 "use client";
 
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/Footer";
+import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/context/themeContext";
 import { AuthProvider } from "@/context/authContext";
 import { Toaster } from "react-hot-toast";

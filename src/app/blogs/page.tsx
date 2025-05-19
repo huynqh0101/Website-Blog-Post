@@ -1,4 +1,4 @@
-import ArticleList from "@/components/articles/ArticleList";
+import BlogList from "@/components/blogs/BlogList";
 import { Suspense } from "react";
 
 export const revalidate = 3600; // Revalidate at most once per hour
@@ -23,7 +23,7 @@ export default function BlogsPage() {
           </div>
         }
       >
-        <ArticleList />
+        <BlogList />
       </Suspense>
     </main>
   );

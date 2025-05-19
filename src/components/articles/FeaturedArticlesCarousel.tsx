@@ -9,12 +9,7 @@ export const FeaturedArticlesCarousel = () => {
   // Sử dụng useMemo để tránh tính toán lại mỗi lần render
   const featuredArticles = useMemo(() => {
     // Tạo mảng các bài viết có đủ thông tin để hiển thị
-    const articles = [
-      ...newsData.editorsPicksArticles,
-      newsData.worldTopNewsArticles.featured,
-      newsData.sportsArticles.featured,
-      ...newsData.topStoriesArticles.slice(0, 2),
-    ].filter(Boolean); // Lọc ra các giá trị null/undefined
+    const articles = [...newsData.articlesNews].filter(Boolean); // Lọc ra các giá trị null/undefined
 
     // Lọc ra những bài có hình ảnh
     return articles.filter((article) => !!article.image);
@@ -104,7 +99,7 @@ export const FeaturedArticlesCarousel = () => {
             <div className="flex h-full">
               {/* Text Content */}
               <div className="w-full md:w-1/2 p-8 flex flex-col justify-center relative z-10">
-                <span className="inline-block px-3 py-1 bg-primary text-white text-xs font-medium rounded mb-4">
+                <span className="inline-block px-6 py-1.5 bg-primary text-white text-base font-medium rounded w-fit mb-4">
                   {article.category || "ARTICLE"}
                 </span>
                 <h2 className="text-2xl md:text-3xl font-bold mb-4 leading-tight">

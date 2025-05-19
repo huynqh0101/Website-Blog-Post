@@ -19,7 +19,7 @@ const DashboardPage = (): JSX.Element => {
     // Kiểm tra xác thực và phân quyền
     if (!user || user.role !== "author") {
       toast.error("You don't have permission to access this page");
-      router.push("/");
+      router.push("/dashboard");
     }
 
     // Lắng nghe sự kiện sidebar thay đổi
@@ -49,7 +49,6 @@ const DashboardPage = (): JSX.Element => {
           isSidebarCollapsed ? "ml-[80px]" : "ml-[250px]"
         }`}
       >
-        {/* Header Section */}
         {/* Header Section */}
         <div className="flex justify-between items-center mb-10 mt-7">
           <h1 className="text-3xl font-semibold text-gray-800 font-['Poppins',system-ui,-apple-system,BlinkMacSystemFont,sans-serif]">

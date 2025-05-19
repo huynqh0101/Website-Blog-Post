@@ -287,8 +287,58 @@ export const businessSidebarArticles = [
   },
 ];
 
+export const articlesNews = [
+  {
+    category: "SPORTS",
+    title: "Everything Developers Must know About Figma",
+    date: "27 AUGUST, 2025",
+    readTime: "20 MINS",
+    image: "/banner/banner1page2.jpg",
+    hasPlayButton: true,
+    id: "editors-1", // Đã sửa id
+  },
+  {
+    category: "FOODS",
+    title: "Top 10 Must-Try Summer Dishes",
+    date: "27 AUGUST, 2025",
+    readTime: "7 MINS",
+    image: "/banner/banner2page2.png",
+    hasPlayButton: false,
+    id: "foods-01",
+  },
+
+  {
+    category: "TECHS",
+    title: "Everything Developers Must know About AI",
+    date: "27 AUGUST, 2025",
+    readTime: "20 MINS",
+    image: "/banner/banner6.png",
+    hasPlayButton: true,
+    id: "editors-3", // Đã sửa id
+  },
+  {
+    category: "POLITICS",
+    title: "US presidential election 2024: What You Need to Know",
+    date: "27 AUGUST, 2025",
+    readTime: "20 MINS",
+    image: "/banner/banner3page2.jpg",
+    hasPlayButton: true,
+    id: "editors-4", // Đã sửa id
+  },
+  {
+    category: "TECHS",
+    title: "AI in Healthcare: Revolutionizing Patient Care",
+    date: "27 AUGUST, 2025",
+    readTime: "20 MINS",
+    image: "/banner/banner6.png",
+    hasPlayButton: true,
+    id: "editors-5", // Đã sửa id
+  },
+];
+
 export const newsData = {
   businessArticle,
+  articlesNews,
   techArticle,
   featuredArticle,
   politicsArticles,

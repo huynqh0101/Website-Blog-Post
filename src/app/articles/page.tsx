@@ -8,6 +8,7 @@ import { TrendingTagsBar } from "@/components/articles/TrendingTagsBar";
 import { ArticlesSidebar } from "@/components/articles/ArticlesSidebar";
 import { FeaturedArticlesCarousel } from "@/components/articles/FeaturedArticlesCarousel";
 import { NewsletterSection } from "@/components/home/newsletter/NewsletterSection";
+import FloatingActionButtons from "@/components/ui/FloatingActionButtons";
 
 export const revalidate = 3600; // Revalidate at most once per hour
 
@@ -112,6 +113,7 @@ export default function ArticlesPage() {
       <div className="mt-16">
         <NewsletterSection />
       </div>
+      <FloatingActionButtons />
     </main>
   );
 }

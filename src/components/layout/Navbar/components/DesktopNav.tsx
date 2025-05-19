@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
 import { navigationItems } from "@/constants/navigation";
-import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 interface DesktopNavProps {
   isDarkMode: boolean;
@@ -51,7 +50,7 @@ export const DesktopNav = ({
                       after:absolute after:content-[''] after:bottom-0 after:left-0 after:w-full after:h-[2px]
                       after:bg-primary after:transition-all after:duration-300
                       after:origin-center after:transform after:scale-x-0
-                      hover:after:scale-x-100 data-[state=open]:bg-transparent
+                      hover:after:scale-x-100 bg-transparent
                       ${
                         isDarkMode
                           ? "text-slate-200 hover:text-white data-[state=open]:text-white bg-transparent"

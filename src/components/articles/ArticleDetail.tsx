@@ -105,7 +105,7 @@ export default function ArticleDetail({
   };
 
   return (
-    <article className="container mx-auto px-4 py-8 pt-20">
+    <article className="container mx-auto px-4 py-8">
       {/* Header */}
       <header className="max-w-4xl mx-auto mb-8">
         <h1 className="text-4xl font-bold mb-4">{article.title}</h1>

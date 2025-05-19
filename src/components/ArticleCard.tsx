@@ -4,7 +4,7 @@ import { Article } from "@/types/article";
 import { FaCalendarAlt } from "react-icons/fa";
 interface ArticleCardProps {
   article: Article;
-  onArticleClick: (article: Article) => void;
+  onArticleClick?: (article: Article) => void;
 }
 
 const formatDate = (dateString: string) => {
@@ -47,8 +47,8 @@ export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
   return (
     <Link
       href={`/articles/${article.slug}`}
-      onClick={() => onArticleClick(article)}
-      className="group w-full bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+      onClick={() => onArticleClick && onArticleClick(article)}
+      className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
     >
       <div className="relative overflow-hidden">
         {coverImageUrl ? (
@@ -57,17 +57,24 @@ export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
             alt={article.cover?.alternativeText || article.title}
             width={500}
             height={300}
-            className="object-cover w-full aspect-[16/9] transform transition-transform duration-300 group-hover:scale-110"
+            className="object-cover w-full aspect-[16/9] transform transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full aspect-[16/9] bg-gray-200 flex items-center justify-center">
+          <div className="w-full aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
             <span className="text-gray-400">No image available</span>
+          </div>
+        )}
+
+        {article.category && (
+          <div className="absolute top-4 left-4">
+            <span className="bg-primary/90 text-white text-xs px-3 py-1 rounded-full font-medium backdrop-blur-sm">
+              {article.category.name}
+            </span>
           </div>
         )}
       </div>
 
-      {/* Phần còn lại của component giữ nguyên */}
-      <div className="p-4 md:p-6 space-y-3 relative">
+      <div className="p-5 md:p-6 space-y-3 flex-grow flex flex-col relative">
         <div className="absolute -top-8 right-4 transform transition-transform duration-300 group-hover:scale-110">
           {article.author?.avatar?.formats?.thumbnail?.url ? (
             <Image
@@ -96,13 +103,13 @@ export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
             {formatDate(article.publishedAt)}
           </time>
           {article.author && (
-            <span className="group-hover:text-primary/80 transition-colors duration-300">
+            <span className="group-hover:text-primary/80 transition-colors duration-300 font-medium">
               {article.author.name}
             </span>
           )}
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-2 group-hover:text-gray-700 transition-colors duration-300">
+        <p className="text-sm text-muted-foreground line-clamp-2 group-hover:text-gray-700 transition-colors duration-300 flex-grow">
           {article.description}
         </p>
       </div>

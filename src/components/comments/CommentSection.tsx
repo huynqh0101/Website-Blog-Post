@@ -6,6 +6,9 @@ import { Comment } from "@/types/comment";
 import { FaThumbsUp, FaThumbsDown, FaReply } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
 import { FaSmile } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 interface CommentSectionProps {
   articleId: string;
 }
@@ -21,11 +24,32 @@ export function CommentSection({ articleId }: CommentSectionProps) {
   const [userVotes, setUserVotes] = useState<{
     [key: string]: "like" | "dislike" | null;
   }>({});
+
+  // Thêm state cho phân trang
+  const [page, setPage] = useState(1);
+  const [totalComments, setTotalComments] = useState(0);
+  const [commentsPerPage, setCommentsPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+
   const fetchComments = async () => {
     setIsLoadingComments(true);
     try {
-      const data = await commentService.getCommentsByArticle(articleId);
-      setComments(data);
+      // Lấy tổng số comment để tính số trang
+      const allComments = await commentService.getCommentsByArticle(articleId);
+      setTotalComments(allComments.length);
+
+      // Tính tổng số trang
+      const calculatedTotalPages = Math.ceil(
+        allComments.length / commentsPerPage
+      );
+      setTotalPages(calculatedTotalPages);
+
+      // Lấy chỉ một phần comments cho trang hiện tại
+      const startIndex = (page - 1) * commentsPerPage;
+      const endIndex = startIndex + commentsPerPage;
+      const paginatedComments = allComments.slice(startIndex, endIndex);
+
+      setComments(paginatedComments);
     } catch (error) {
       console.error("Error fetching comments:", error);
     } finally {
@@ -38,9 +62,10 @@ export function CommentSection({ articleId }: CommentSectionProps) {
     setNewComment((prev) => prev + emoji);
     setShowEmojiPicker(false);
   };
+
   useEffect(() => {
     fetchComments();
-  }, [articleId]);
+  }, [articleId, page, commentsPerPage]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +76,7 @@ export function CommentSection({ articleId }: CommentSectionProps) {
       const result = await commentService.createComment(newComment, articleId);
       if (result) {
         setNewComment("");
+        setPage(1); // Quay lại trang đầu tiên sau khi thêm comment mới
         await fetchComments();
       }
     } catch (error) {
@@ -95,6 +121,107 @@ export function CommentSection({ articleId }: CommentSectionProps) {
         }));
       }
     }
+  };
+
+  // Hàm chuyển trang
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages || newPage === page) return;
+    setPage(newPage);
+  };
+
+  // Render nút phân trang
+  const renderPaginationButtons = () => {
+    if (totalPages <= 1) return null;
+
+    const buttons = [];
+    const maxVisibleButtons = 5;
+
+    // Nút trang đầu tiên
+    buttons.push(
+      <Button
+        key={1}
+        onClick={() => handlePageChange(1)}
+        variant={page === 1 ? "default" : "outline"}
+        size="sm"
+        className={`w-8 h-8 p-0 ${page === 1 ? "bg-blue-600 text-white" : ""}`}
+      >
+        1
+      </Button>
+    );
+
+    let startPage = Math.max(2, page - Math.floor((maxVisibleButtons - 3) / 2));
+    let endPage = Math.min(totalPages - 1, startPage + maxVisibleButtons - 4);
+
+    // Điều chỉnh phạm vi nếu cần
+    if (endPage - startPage < maxVisibleButtons - 4) {
+      startPage = Math.max(2, endPage - (maxVisibleButtons - 4));
+    }
+
+    // Hiển thị dấu ... nếu cần
+    if (startPage > 2) {
+      buttons.push(
+        <Button
+          key="start-ellipsis"
+          variant="ghost"
+          size="sm"
+          className="w-8 h-8 p-0"
+          disabled
+        >
+          ...
+        </Button>
+      );
+    }
+
+    // Các trang ở giữa
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <Button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          variant={page === i ? "default" : "outline"}
+          size="sm"
+          className={`w-8 h-8 p-0 ${
+            page === i ? "bg-blue-600 text-white" : ""
+          }`}
+        >
+          {i}
+        </Button>
+      );
+    }
+
+    // Dấu ... cuối nếu cần
+    if (endPage < totalPages - 1) {
+      buttons.push(
+        <Button
+          key="end-ellipsis"
+          variant="ghost"
+          size="sm"
+          className="w-8 h-8 p-0"
+          disabled
+        >
+          ...
+        </Button>
+      );
+    }
+
+    // Nút trang cuối
+    if (totalPages > 1) {
+      buttons.push(
+        <Button
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+          variant={page === totalPages ? "default" : "outline"}
+          size="sm"
+          className={`w-8 h-8 p-0 ${
+            page === totalPages ? "bg-blue-600 text-white" : ""
+          }`}
+        >
+          {totalPages}
+        </Button>
+      );
+    }
+
+    return buttons;
   };
 
   return (
@@ -143,9 +270,7 @@ export function CommentSection({ articleId }: CommentSectionProps) {
       </form>
 
       <div className="mt-8">
-        <h3 className="text-2xl font-bold mb-6">
-          Bình luận ({comments.length})
-        </h3>
+        <h3 className="text-2xl font-bold mb-6">Comment ({totalComments})</h3>
         {isLoadingComments ? (
           <div className="flex justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -155,7 +280,7 @@ export function CommentSection({ articleId }: CommentSectionProps) {
             {comments.map((comment) => (
               <div
                 key={comment.id}
-                className="bg-white rounded-lg shadow-sm p-6 border hover:shadow-md transition duration-200"
+                className="bg-white rounded-lg shadow-sm p-3 border hover:shadow-md transition duration-200"
               >
                 <div className="flex items-start space-x-4">
                   {comment.user.avatar ? (
@@ -224,6 +349,33 @@ export function CommentSection({ articleId }: CommentSectionProps) {
                 </div>
               </div>
             ))}
+
+            {/* Phân trang */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1}
+                  className="w-8 h-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+
+                {renderPaginationButtons()}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page === totalPages}
+                  className="w-8 h-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center py-10 bg-gray-50 rounded-lg">

@@ -105,7 +105,7 @@ export default function CreateArticlePage() {
 
       const data = await createArticle(articleData);
       toast.success("Article created successfully");
-      router.push(`/dashboard/article/${data.data.id}`);
+      router.push(`/dashboard/article/${data.data.documentId}`);
     } catch (error) {
       console.error("Error creating article:", error);
       toast.error("Failed to create article");

@@ -26,8 +26,6 @@ export default function ArticleList() {
 
     // Xác định hướng chuyển trang để áp dụng animation tương ứng
     setDirection(newPage > page ? 1 : -1);
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
     setPage(newPage);
     loadArticles(newPage, true);
   };

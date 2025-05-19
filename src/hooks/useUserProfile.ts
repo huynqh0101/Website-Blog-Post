@@ -1,25 +1,44 @@
-import { useState } from "react";
-import { UserData, UserProfileData } from "@/components/profile/types";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export const useUserProfile = () => {
+  const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [formData, setFormData] = useState<UserProfileData>({
+  const [userData, setUserData] = useState(null);
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
-    avatar: null,
+    avatar: null as File | null,
   });
-  const { user, logout } = useAuth();
-  const router = useRouter();
+
+  // Track initial fetch attempt
+  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
   const fetchUserData = async () => {
+    if (loading) return;
+
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please login to view this page");
+        router.push("/login");
+        return;
+      }
+
+      if (!user || !user.id) {
+        console.log("User information not ready yet");
+        if (hasAttemptedFetch) {
+          toast.error("Unable to retrieve user information");
+        }
+        return;
+      }
+
       const response = await fetch(
-        `http://localhost:1337/api/users/${user?.id}?populate=avatar`,
+        `http://localhost:1337/api/users/${user.id}?populate=avatar`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -27,22 +46,41 @@ export const useUserProfile = () => {
         }
       );
 
+      if (response.status === 401) {
+        toast.error("Your session has expired, please login again");
+        logout();
+        router.push("/login");
+        return;
+      }
+
       if (!response.ok) {
-        throw new Error("Failed to fetch user data");
+        throw new Error("Unable to load user data");
       }
 
       const data = await response.json();
       setUserData(data);
+
       setFormData({
-        username: data.username,
-        email: data.email,
+        username: data.username || "",
+        email: data.email || "",
         avatar: null,
       });
+
+      setHasAttemptedFetch(true);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error loading user data:", error);
       toast.error("Failed to load user data");
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Only fetch when user and authentication are ready
+  useEffect(() => {
+    if (isAuthenticated && user && user.id) {
+      fetchUserData();
+    }
+  }, [isAuthenticated, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +89,7 @@ export const useUserProfile = () => {
     try {
       const token = localStorage.getItem("token");
 
-      // Xử lý upload avatar trước nếu có
+      // Handle avatar upload if provided
       if (formData.avatar) {
         const avatarFormData = new FormData();
         avatarFormData.append("files", formData.avatar);
@@ -76,7 +114,7 @@ export const useUserProfile = () => {
         }
       }
 
-      // Cập nhật thông tin user
+      // Update user information
       const response = await fetch(
         `http://localhost:1337/api/users/${user?.id}`,
         {
@@ -93,21 +131,16 @@ export const useUserProfile = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-
-      // Xử lý thay đổi email
-      if (formData.email !== user?.email) {
-        logout();
-        toast.success("Email updated. Please login again");
-        router.push("/login");
-        return;
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || "Failed to update profile");
       }
 
       toast.success("Profile updated successfully!");
-      await fetchUserData();
+
+      // Refresh user data after update
+      fetchUserData();
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Profile update error:", error);
       toast.error(
         error instanceof Error ? error.message : "Failed to update profile"
       );

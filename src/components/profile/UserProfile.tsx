@@ -28,7 +28,7 @@ export default function UserProfile() {
     setAvatarPreview(previewUrl);
     setFormData({
       ...formData,
-      avatar: file,
+      avatar: file as any,
     });
   };
 
@@ -93,8 +93,8 @@ export default function UserProfile() {
                       variant="outline"
                       onClick={() =>
                         setFormData({
-                          username: userData.username,
-                          email: userData.email,
+                          username: (userData as any)?.username || "",
+                          email: (userData as any)?.email || "",
                           avatar: null,
                         })
                       }

@@ -16,8 +16,23 @@ const Footer = (): JSX.Element => {
       <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-500">
         <BannerSlider height="15rem" />
       </div>
-      <footer className="w-full bg-gray-50 py-16 border-t border-gray-200">
-        <div className="container mx-auto px-4 md:px-8 lg:px-16">
+      <footer className="w-full py-16 relative overflow-hidden bg-gradient-to-br from-blue-50 to-gray-100">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 z-0">
+          <div
+            className="absolute inset-0 opacity-10 bg-repeat"
+            style={{
+              backgroundImage:
+                'url(\'data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%234a90e2" fill-opacity="0.4" fill-rule="evenodd"%3E%3Cpath d="M0 40L40 0H20L0 20M40 40V20L20 40"/%3E%3C/g%3E%3C/svg%3E\')',
+            }}
+          ></div>
+          <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/50 to-transparent"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-blue-200 filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/4"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-indigo-200 filter blur-3xl opacity-20 translate-y-1/2 -translate-x-1/4"></div>
+        </div>
+
+        {/* Content with increased z-index to appear above the background */}
+        <div className="container mx-auto px-4 md:px-8 lg:px-16 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Logo and description column */}
             <div className="flex flex-col space-y-4 lg:col-span-1">
@@ -161,6 +176,9 @@ const Footer = (): JSX.Element => {
             </div>
           </div>
         </div>
+
+        {/* Bottom decorative border */}
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-30"></div>
       </footer>
     </>
   );

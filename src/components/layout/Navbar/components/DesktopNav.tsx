@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import { navigationItems } from "@/constants/navigation";
 import { useRouter } from "next/navigation";
+
 interface DesktopNavProps {
   isDarkMode: boolean;
   isSearchVisible: boolean;
@@ -23,6 +24,32 @@ export const DesktopNav = ({
 }: DesktopNavProps) => {
   const router = useRouter();
 
+  // Định nghĩa style cho các menu item
+  const getMenuItemClass = (isActive: boolean) => {
+    return `relative ${
+      isSearchVisible ? "py-1 pl-[12px] pr-[15px]" : "px-6 py-2"
+    } transition-all duration-300 font-medium tracking-wide ${
+      isSearchVisible ? "text-[12.3px]" : "text-[14px]"
+    }
+      after:absolute after:content-[''] after:bottom-0 after:left-0 after:w-full after:h-[2px]
+      after:bg-primary after:transition-transform after:duration-300
+      after:origin-center after:transform
+      hover:after:scale-x-100 bg-transparent
+      ${
+        isActive
+          ? `${
+              isDarkMode
+                ? "text-primary after:scale-x-100"
+                : "text-primary after:scale-x-100"
+            }`
+          : `${
+              isDarkMode
+                ? "text-slate-300 hover:text-white after:scale-x-0"
+                : "text-slate-600 hover:text-primary after:scale-x-0"
+            }`
+      }`;
+  };
+
   return (
     <NavigationMenu
       className={`hidden lg:flex transition-all duration-300 relative ${
@@ -31,7 +58,7 @@ export const DesktopNav = ({
     >
       <NavigationMenuList
         className={`flex transition-all duration-300 ${
-          isSearchVisible ? "space-x-1" : "space-x-6"
+          isSearchVisible ? "space-x-0" : "space-x-2"
         }`}
       >
         {navigationItems.map((item) => (
@@ -44,23 +71,10 @@ export const DesktopNav = ({
             {item.dropdownItems ? (
               <>
                 <div className="relative flex flex-col items-center">
-                  {/* Thêm Link bên trong để cho phép điều hướng khi click vào menu chính */}
                   <NavigationMenuTrigger
-                    className={`relative px-6 py-2 transition-colors duration-300 font-medium tracking-wide text-[15px]
-                      after:absolute after:content-[''] after:bottom-0 after:left-0 after:w-full after:h-[2px]
-                      after:bg-primary after:transition-all after:duration-300
-                      after:origin-center after:transform after:scale-x-0
-                      hover:after:scale-x-100 bg-transparent
-                      ${
-                        isDarkMode
-                          ? "text-slate-200 hover:text-white data-[state=open]:text-white bg-transparent"
-                          : "text-slate-600 hover:text-primary data-[state=open]:text-primary"
-                      }`}
+                    className={getMenuItemClass(pathname === item.href)}
                     onClick={(e) => {
-                      // Cho phép nhấn vào tên menu để điều hướng
-                      // Chỉ ngăn hành vi mặc định nếu click vào phần dropdown indicator
                       const target = e.target as HTMLElement;
-                      // Nếu không phải click vào dropdown indicator (caret)
                       if (
                         !target.closest('[data-dropdown-indicator="true"]') &&
                         item.href
@@ -110,7 +124,7 @@ export const DesktopNav = ({
             ) : (
               <Link
                 href={item.href}
-                className={getNavItemStyles(pathname === item.href)}
+                className={getMenuItemClass(pathname === item.href)}
               >
                 {item.name}
               </Link>

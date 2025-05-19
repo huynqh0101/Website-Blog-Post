@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter, Manrope } from "next/font/google";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
+import { Toaster } from "sonner";
 
 // Lazy load RootLayoutClient
 const RootLayoutClient = dynamic(() => import("./RootLayoutClient"), {
@@ -47,6 +48,7 @@ export default function RootLayout({
       >
         <Suspense fallback={<div>Loading application...</div>}>
           <RootLayoutClient>{children}</RootLayoutClient>
+          <Toaster position="bottom-right" richColors />
         </Suspense>
       </body>
     </html>

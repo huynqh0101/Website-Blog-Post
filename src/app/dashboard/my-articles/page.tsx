@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Article, ArticleResponse } from "@/types/articleAdmin";
 import { ArticleCard } from "@/components/dashboard/components/ArticleCard";
 import CategoryFilter from "@/components/news/CategoryFilter";
+import { useAuth } from "@/context/authContext";
+import { toast } from "sonner";
 
 export default function MyArticlesPage() {
+  const { user } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,43 +17,53 @@ export default function MyArticlesPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const articlesPerPage = 9;
 
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        setIsLoading(true);
-        // Build the filter query based on category selection
-        let filterQuery = "filters[author][id][$eq]=2";
-        if (selectedCategory) {
-          filterQuery += `&filters[category][name][$eq]=${selectedCategory}`;
-        }
+  const fetchArticles = useCallback(async () => {
+    if (!user?.email) {
+      setIsLoading(false);
+      setError("You need to login to view your articles");
+      return;
+    }
 
-        // Fetch articles with pagination and category filtering
-        const response = await fetch(
-          `http://localhost:1337/api/articles?${filterQuery}&populate[author]=true&populate[cover]=true&populate[category]=true&pagination[page]=${currentPage}&pagination[pageSize]=${articlesPerPage}`
-        );
+    try {
+      setIsLoading(true);
+      // Encode email để tránh các ký tự đặc biệt trong URL
+      const encodedEmail = encodeURIComponent(user.email);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch articles");
-        }
-
-        const data: ArticleResponse = await response.json();
-        console.log("Fetched articles:", data);
-        setArticles(data.data);
-
-        // Calculate total pages from the pagination metadata
-        if (data.meta?.pagination) {
-          setTotalPages(data.meta.pagination.pageCount);
-        }
-      } catch (err) {
-        setError("Error loading articles. Please try again later.");
-        console.error("Error fetching articles:", err);
-      } finally {
-        setIsLoading(false);
+      // Build the filter query based on category and user's email
+      let filterQuery = `filters[author][email][$eq]=${encodedEmail}`;
+      if (selectedCategory) {
+        filterQuery += `&filters[category][name][$eq]=${selectedCategory}`;
       }
-    };
 
+      // Fetch articles with pagination and category filtering
+      const response = await fetch(
+        `http://localhost:1337/api/articles?${filterQuery}&populate[author]=true&populate[cover]=true&populate[category]=true&pagination[page]=${currentPage}&pagination[pageSize]=${articlesPerPage}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch articles");
+      }
+
+      const data: ArticleResponse = await response.json();
+      console.log("Fetched articles:", data);
+      setArticles(data.data);
+
+      // Calculate total pages from the pagination metadata
+      if (data.meta?.pagination) {
+        setTotalPages(data.meta.pagination.pageCount);
+      }
+    } catch (err) {
+      setError("Error loading articles. Please try again later.");
+      console.error("Error fetching articles:", err);
+      toast.error("Could not load your articles");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, selectedCategory, user?.email]);
+
+  useEffect(() => {
     fetchArticles();
-  }, [currentPage, selectedCategory]);
+  }, [fetchArticles]);
 
   // Format date to readable format
   const formatDate = (dateString: string) => {
@@ -69,6 +82,18 @@ export default function MyArticlesPage() {
     setSelectedCategory(category);
     setCurrentPage(1); // Reset to first page when changing category
   };
+
+  if (!user) {
+    return (
+      <div className="lg:ml-[200px] p-8">
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="text-center py-8 text-gray-500">
+            Please login to view your articles.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="lg:ml-[200px] p-8">

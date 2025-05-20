@@ -11,7 +11,7 @@ export const revalidate = 3600; // Revalidate at most once per hour
 export default function BlogsPage() {
   return (
     <main className="pt-8 pb-20">
-      {/* Hero Banner */}
+      {/* Hero Banner3333 */}
       <div className="relative bg-gradient-to-r from-blue-600 to-indigo-800 py-16 mb-12">
         <div className="absolute inset-0 overflow-hidden opacity-20">
           <div

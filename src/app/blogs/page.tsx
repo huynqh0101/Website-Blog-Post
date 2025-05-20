@@ -266,7 +266,7 @@ export default function BlogsPage() {
                     </p>
                     <div className="flex items-center">
                       <img
-                        src={`/images/team/back3.jpg`}
+                        src={`/images/team/digital.jpg`}
                         alt="Author"
                         className="w-8 h-8 rounded-full mr-2"
                       />

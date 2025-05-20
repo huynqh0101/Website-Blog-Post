@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChevronRightIcon, UserIcon } from "lucide-react";
+import Link from "next/link"; // Import Link từ Next.js
 
 interface PoliticsSectionProps {
   articles: Array<{
@@ -9,6 +10,8 @@ interface PoliticsSectionProps {
     date: string;
     description?: string;
     image?: string;
+    id?: string;
+    slug?: string;
   }>;
 }
 
@@ -33,17 +36,21 @@ export const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
       <div className="flex flex-col md:flex-row gap-6">
         <div className="md:w-[653px]">
           <div className="flex flex-col md:flex-row gap-6">
-            <div
-              className="w-full md:w-[330px] h-[295px] bg-cover bg-center"
-              style={{ backgroundImage: `url(${mainArticle.image})` }}
-            />
+            <Link href={`/articles/${mainArticle.slug}`} className="block w-full md:w-[330px]">
+              <div
+                className="w-full h-[295px] bg-cover bg-center"
+                style={{ backgroundImage: `url(${mainArticle.image})` }}
+              />
+            </Link>
             <div className="flex flex-col">
               <div className="text-[13px] text-[#6d757f] font-normal mb-2">
                 {mainArticle.category}
               </div>
-              <h3 className="text-xl font-extrabold text-[#183354] mb-4 hover:text-[#22408a] hover:underline cursor-pointer transition-colors duration-200">
-                {mainArticle.title}
-              </h3>
+              <Link href={`/articles/${mainArticle.slug}`}>
+                <h3 className="text-xl font-extrabold text-[#183354] mb-4 hover:text-[#22408a] hover:underline cursor-pointer transition-colors duration-200">
+                  {mainArticle.title}
+                </h3>
+              </Link>
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   <UserIcon className="w-[17px] h-4" />
@@ -64,15 +71,17 @@ export const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
               <p className="text-[#545e69] text-base leading-7 mb-4">
                 {mainArticle.description}
               </p>
-              <Button
-                variant="outline"
-                className="w-[138px] h-9 rounded border border-[#cfcfcf] flex items-center gap-2 group hover:border-[#22408a] transition-colors duration-200"
-              >
-                <span className="text-sm font-medium text-[#183354] group-hover:text-[#22408a] group-hover:underline transition-colors duration-200">
-                  READ MORE
-                </span>
-                <ChevronRightIcon className="w-2.5 h-2.5 group-hover:text-[#22408a] transition-colors duration-200" />
-              </Button>
+              <Link href={`/articles/${mainArticle.slug}`}>
+                <Button
+                  variant="outline"
+                  className="w-[138px] h-9 rounded border border-[#cfcfcf] flex items-center gap-2 group hover:border-[#22408a] transition-colors duration-200"
+                >
+                  <span className="text-sm font-medium text-[#183354] group-hover:text-[#22408a] group-hover:underline transition-colors duration-200">
+                    READ MORE
+                  </span>
+                  <ChevronRightIcon className="w-2.5 h-2.5 group-hover:text-[#22408a] transition-colors duration-200" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -88,9 +97,11 @@ export const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
                     : ""
                 }`}
               >
-                <h3 className="text-lg font-semibold text-[#183354] mb-2 hover:text-[#22408a] hover:underline cursor-pointer transition-colors duration-200">
-                  {article.title}
-                </h3>
+                <Link href={`/articles/${article.slug}`}>
+                  <h3 className="text-lg font-semibold text-[#183354] mb-2 hover:text-[#22408a] hover:underline cursor-pointer transition-colors duration-200">
+                    {article.title}
+                  </h3>
+                </Link>
                 <div className="flex items-center gap-1">
                   <CalendarIcon className="w-[17px] h-4" />
                   <span className="text-[13px] text-[#6d757f] tracking-[0.52px]">

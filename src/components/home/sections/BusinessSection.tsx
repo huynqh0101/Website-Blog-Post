@@ -1,11 +1,13 @@
 import { CalendarIcon } from "lucide-react";
 import { Advertisement } from "../advertisements/Advertisement";
+import Link from "next/link"; // Thêm import Link
 
 interface BusinessArticle {
   category: string;
   title: string;
   date: string;
   image?: string;
+  slug: string; // Thêm slug để tạo URL
 }
 
 interface BusinessSectionProps {
@@ -31,49 +33,54 @@ export const BusinessSection = ({ articles }: BusinessSectionProps) => {
         />
       </div>
       {/* Featured Business Article */}
-      <div className="mb-8 group cursor-pointer">
-        <div
-          className="w-full h-[240px] bg-cover bg-center mb-4 transition-transform duration-300 group-hover:scale-[1.02] rounded-md overflow-hidden shadow-sm"
-          style={{
-            backgroundImage: `url(${
-              featuredArticle.image || "/default-business-image.jpg"
-            })`,
-          }}
-        />
-        <div className="text-[13px] text-[#183354] font-medium mb-2 uppercase tracking-wider">
-          {featuredArticle.category}
+      <Link href={`/articles/${featuredArticle.slug}`} className="block">
+        <div className="mb-8 group cursor-pointer">
+          <div
+            className="w-full h-[240px] bg-cover bg-center mb-4 transition-transform duration-300 group-hover:scale-[1.02] rounded-md overflow-hidden shadow-sm"
+            style={{
+              backgroundImage: `url(${
+                featuredArticle.image || "/default-business-image.jpg"
+              })`,
+            }}
+          />
+          <div className="text-[13px] text-[#183354] font-medium mb-2 uppercase tracking-wider">
+            {featuredArticle.category}
+          </div>
+          <h3 className="text-xl font-bold text-[#183354] mb-2 group-hover:text-[#22408a] group-hover:underline transition-colors duration-200">
+            {featuredArticle.title}
+          </h3>
+          <div className="flex items-center gap-1.5 text-[#6d757f]">
+            <CalendarIcon className="w-[17px] h-4" />
+            <span className="text-[13px] tracking-[0.52px]">
+              {featuredArticle.date}
+            </span>
+          </div>
         </div>
-        <h3 className="text-xl font-bold text-[#183354] mb-2 group-hover:text-[#22408a] group-hover:underline transition-colors duration-200">
-          {featuredArticle.title}
-        </h3>
-        <div className="flex items-center gap-1.5 text-[#6d757f]">
-          <CalendarIcon className="w-[17px] h-4" />
-          <span className="text-[13px] tracking-[0.52px]">
-            {featuredArticle.date}
-          </span>
-        </div>
-      </div>
+      </Link>
 
       {/* Side Business Articles */}
       <div className="space-y-1">
         {sideArticles.map((article, index) => (
-          <div
+          <Link
             key={index}
-            className="py-4 border-b border-[#dfdfdf] hover:bg-gray-50 px-2 -mx-2 rounded transition-colors duration-200 cursor-pointer group"
+            href={`/articles/${article.slug}`}
+            className="block"
           >
-            <div className="text-[13px] text-[#183354] font-medium mb-1.5 uppercase tracking-wider">
-              {article.category}
+            <div className="py-4 border-b border-[#dfdfdf] hover:bg-gray-50 px-2 -mx-2 rounded transition-colors duration-200 cursor-pointer group">
+              <div className="text-[13px] text-[#183354] font-medium mb-1.5 uppercase tracking-wider">
+                {article.category}
+              </div>
+              <h3 className="text-lg font-bold text-[#183354] mb-2 group-hover:text-[#22408a] group-hover:underline transition-colors duration-200">
+                {article.title}
+              </h3>
+              <div className="flex items-center gap-1.5 text-[#6d757f]">
+                <CalendarIcon className="w-[17px] h-4" />
+                <span className="text-[13px] tracking-[0.52px]">
+                  {article.date}
+                </span>
+              </div>
             </div>
-            <h3 className="text-lg font-bold text-[#183354] mb-2 group-hover:text-[#22408a] group-hover:underline transition-colors duration-200">
-              {article.title}
-            </h3>
-            <div className="flex items-center gap-1.5 text-[#6d757f]">
-              <CalendarIcon className="w-[17px] h-4" />
-              <span className="text-[13px] tracking-[0.52px]">
-                {article.date}
-              </span>
-            </div>
-          </div>
+          </Link>
         ))}
       </div>
 

@@ -46,6 +46,7 @@ export const MainByAnima = () => {
             <div className="flex flex-col gap-6 md:w-[289px]">
               {/* Business Article */}
               <ArticleCard
+                slug={businessArticle.slug}
                 category={businessArticle.category}
                 title={businessArticle.title}
                 author={businessArticle.author}
@@ -55,6 +56,7 @@ export const MainByAnima = () => {
               />
               {/* Tech Article */}
               <ArticleCard
+                slug={businessArticle.slug}
                 category={techArticle.category}
                 title={techArticle.title}
                 author={techArticle.author}

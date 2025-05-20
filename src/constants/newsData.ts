@@ -8,7 +8,7 @@ export const businessArticle = {
   id: "business-1", // Đã sửa id
   description:
     "A comprehensive guide for conducting efficient user research strategies in modern business environments.",
-  slug: "pragmatists-guide-to-user-research",
+  slug: "a-pragmatists-guide-to-their-lean-user-research",
 };
 
 export const techArticle = {
@@ -33,8 +33,8 @@ export const featuredArticle = {
     "Browned Butter And Brown Sugar Caramelly Goodness, Crispy Edgend Software centers And Melty Little Puddles Of Chocolate First Favorite.",
   images: ["/banner/banner5.jpg", "/banner/banner6.png", "/banner/banner7.png"],
   hasPlayButton: false, // Added property
-  id: "featured-1", // Đã sửa id
-  slug: "beyond-algorithms-designers-skills",
+  id: "qo470sgfote22m5u88qkt9vn", // Đã sửa id
+  slug: "beyond-algorithms-skills-of-designers-that-ai-cant-replicate",
 };
 
 export const politicsArticles = [
@@ -46,8 +46,8 @@ export const politicsArticles = [
     description:
       "Browned Butter Browa Melly Ness crispy Edgend Software Centers puddles Of Chocolate.",
     image: "/politics-post01-jpg.png",
-    id: "politics-1", // Đã sửa id
-    slug: "warns-financial-institutions-russian",
+    id: "t31z1gfqgfjl6dqeish3b95n", // Đã sửa id
+    slug: "warns-financial-institutions-to-be-on-watch-for-russian",
   },
   {
     title: "Ux Checklists For Interface designers",
@@ -82,7 +82,7 @@ export const todayHotSpotArticles = [
     author: "ADMIN",
     date: "27 AUGUST, 2025",
     image: "/today-post01-jpg.png",
-    id: "hotspot-1", // Đã sửa id
+    id: "u4xr1fmz8ovf8uk6ub2dxesj", // Đã sửa id
     description:
       "Strategies for creating user-friendly error messages that enhance rather than frustrate the user experience.",
     slug: "designing-better-error-messages-ux",

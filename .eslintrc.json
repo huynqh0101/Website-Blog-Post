@@ -7,7 +7,7 @@
 
     // Add your other rules here
     "no-unused-vars": "warn",
-    "semi": ["error", "always"],
+    "semi": ["error", "always"]
     // Other rules can be added as needed
-  },
+  }
 }

@@ -1,0 +1,3 @@
+# Backend - Strapi CMS
+
+PoC

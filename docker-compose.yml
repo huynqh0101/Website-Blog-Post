@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pj-intern-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_STRAPI_API_URL=http://localhost:1337
+      - STRAPI_API_URL=http://backend:1337
+      - NEXT_PUBLIC_STRAPI_API_TOKEN=68acd4c0e47dfcbd89c8a2f8152856d81980903fc9e7bda7c7280cf3ac398798c4786f47ca7d8bdc7408f507a1a6e76ace1ef611431c65fdd7bf1f925c500561cac6a8b1325b118233b5c0c04bda1aabbd00b0bc5ebd4bb3f7a13ef343fb7c0647d5a948022d955f12ab16611c64031812dbfea23451cebd003374e7a891dfa5
+      - NEXT_PUBLIC_PAGE_LIMIT=6
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pj-intern-backend
+    ports:
+      - "1337:1337"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=1337
+      - APP_KEYS=e3ZBpMayP4R3OH1R69qvug==,eHGWUKcHljiqaavmUEKAAw==,ezQVJSHUcIb7Ra5eyc4S0g==,K/pnx9QgsB7441vpcamctA==
+      - API_TOKEN_SALT=kW3v+M+FG8VVz7TaZI2fBQ==
+      - ADMIN_JWT_SECRET=FlhDKidzGdbmvA3PMrX4+g==
+      - TRANSFER_TOKEN_SALT=khW0NDVGReBLfB2+y6njtg==
+      - JWT_SECRET=LAceTVrgcnc0LRfkRrMrBg==
+      - DATABASE_CLIENT=sqlite
+      - DATABASE_FILENAME=.tmp/data.db
+      - NODE_ENV=production
+    volumes:
+      - ./backend/public/uploads:/app/public/uploads
+      - ./backend/.tmp:/app/.tmp
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

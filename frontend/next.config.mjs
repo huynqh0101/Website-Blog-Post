@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-export const nextConfig = {
+const nextConfig = {
   images: {
     remotePatterns: [
       {
@@ -23,8 +23,9 @@ export const nextConfig = {
   eslint: {
     // Bỏ qua lỗi ESLint khi build
     ignoreDuringBuilds: true,
-    ignoreDuringDevs: true,
+    // Xóa dòng ignoreDuringDevs vì nó không được hỗ trợ
   },
 };
 
+// Nếu đang dùng file .mjs
 export default nextConfig;

@@ -16,7 +16,7 @@ interface SportsSectionProps {
     }>;
   };
 }
-
+//update
 export const SportsSection = ({ sportsData }: SportsSectionProps) => {
   return (
     <div className="mb-8">

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import BlogList from "@/components/blogs/BlogList";
 import { Suspense } from "react";
 import { TrendingTagsBar } from "@/components/articles/TrendingTagsBar";

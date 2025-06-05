@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3Icon, CalendarIcon } from "lucide-react";
+import {CalendarIcon } from "lucide-react";
 import { PlusCircle } from "lucide-react";
 
 export const QuickActions = () => {

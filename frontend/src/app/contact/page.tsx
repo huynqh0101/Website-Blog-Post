@@ -64,8 +64,8 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Have questions or feedback? We'd love to hear from you. Our team is
-            here to help and respond as quickly as possible.
+            Have questions or feedback? We&#39;d love to hear from you. Our team
+            is here to help and respond as quickly as possible.
           </motion.p>
         </div>
         <div className="absolute inset-0 opacity-20 bg-pattern"></div>
@@ -151,7 +151,8 @@ export default function ContactPage() {
                   Message Sent!
                 </h3>
                 <p className="text-green-700 dark:text-green-400">
-                  Thank you for contacting us. We'll get back to you shortly.
+                  Thank you for contacting us. We&#39;ll get back to you
+                  shortly.
                 </p>
               </motion.div>
             ) : (

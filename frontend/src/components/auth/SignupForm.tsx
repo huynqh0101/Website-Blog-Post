@@ -1,166 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/authContext";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-// Thêm Eye và EyeOff vào dòng import icons
 import { User, Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
-import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-interface FormData {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  role: "author" | "user";
-}
+import { useSignup } from "@/hooks/useSignup";
 
 export default function SignupForm() {
-  const router = useRouter();
-  const { login } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "user", // Default role
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Kiểm tra mật khẩu xác nhận
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match!");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (formData.role === "user") {
-        const response = await fetch(
-          "http://localhost:1337/api/auth/local/register",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username: formData.username,
-              email: formData.email,
-              password: formData.password,
-            }),
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error?.message || "Something went wrong");
-        }
-        const updateResponse = await fetch(
-          `http://localhost:1337/api/users/${data.user.id}`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${data.jwt}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              avatar: 13, // Use the same default avatar ID as author
-            }),
-          }
-        );
-
-        if (!updateResponse.ok) {
-          console.error("Failed to set default avatar");
-        }
-        login(data.jwt, {
-          id: data.user.id,
-          username: data.user.username,
-          email: data.user.email,
-          role: "user",
-        });
-      } else {
-        const response = await fetch("http://localhost:1337/api/authors", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            data: {
-              name: formData.username,
-              email: formData.email,
-              password: formData.password,
-              avatar: 13, // Default avatar ID
-            },
-          }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          if (data.error?.message?.includes("username")) {
-            throw new Error("Username is already taken");
-          } else if (data.error?.message?.includes("email")) {
-            throw new Error("Email is already registered");
-          }
-          throw new Error(data.error?.message || "Registration failed");
-        }
-
-        const userResponse = await fetch(
-          "http://localhost:1337/api/auth/local/register",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username: formData.username,
-              email: formData.email,
-              password: formData.password,
-            }),
-          }
-        );
-        const userData = await userResponse.json();
-        if (!userResponse.ok) {
-          throw new Error(
-            userData.error?.message || "User registration failed"
-          );
-        }
-        // Assuming the author API returns similar structure as user registration
-        login(userData.jwt, {
-          id: data.data.id, // ID của author entry
-          username: formData.username,
-          email: formData.email,
-          role: "author",
-        });
-      }
-      toast.success(`Registration successful as ${formData.role}!`);
-      router.push("/");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Registration failed"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    formData,
+    loading,
+    showPassword,
+    showConfirmPassword,
+    setShowPassword,
+    setShowConfirmPassword,
+    handleChange,
+    handleSubmit,
+  } = useSignup();
 
   return (
     <div className="bg-white flex flex-row justify-center w-full min-h-screen">
@@ -169,7 +28,7 @@ export default function SignupForm() {
           <Card className="border-none shadow-none w-full max-w-[350px]">
             <CardContent className="p-0">
               <div className="mb-8">
-                <h1 className="text-3xl font-semibold font-['Poppins'] text-gray-900 tracking-tight">
+                <h1 className="text-3xl font-semibold font-serif text-gray-900 tracking-tight">
                   Get Started Now
                 </h1>
                 <p className="mt-2 text-sm text-gray-600">
@@ -178,47 +37,63 @@ export default function SignupForm() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Username field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-['Poppins'] text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700">
                     Name
                   </label>
-                  <Input
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    placeholder="Enter your name"
-                    className="h-10 text-sm font-['Poppins'] rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22]"
-                    required
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <Input
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      placeholder="Enter your name"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10"
+                      required
+                    />
+                  </div>
                 </div>
 
+                {/* Email field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-['Poppins'] text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700">
                     Email address
                   </label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email"
-                    className="h-10 text-sm font-['Poppins'] rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22]"
-                    required
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Enter your email"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10"
+                      required
+                    />
+                  </div>
                 </div>
 
+                {/* Password field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-['Poppins'] text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700">
                     Password
                   </label>
                   <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-4 w-4 text-gray-400" />
+                    </div>
                     <Input
                       type={showPassword ? "text" : "password"}
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Enter your password"
-                      className="h-10 text-sm font-['Poppins'] rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pr-10"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 pr-10"
                       required
                     />
                     <button
@@ -235,18 +110,23 @@ export default function SignupForm() {
                   </div>
                 </div>
 
+                {/* Confirm password field */}
+                {/* Confirm password field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-['Poppins'] text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700">
                     Confirm Password
                   </label>
                   <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-4 w-4 text-gray-400" />
+                    </div>
                     <Input
                       type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Confirm your password"
-                      className="h-10 text-sm font-['Poppins'] rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pr-10"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 pr-10"
                       required
                     />
                     <button
@@ -265,6 +145,7 @@ export default function SignupForm() {
                   </div>
                 </div>
 
+                {/* Role selection */}
                 <div className="flex justify-center space-x-8 py-3">
                   <div className="flex items-center">
                     <input
@@ -303,6 +184,7 @@ export default function SignupForm() {
                   </div>
                 </div>
 
+                {/* Terms checkbox */}
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="terms"
@@ -317,10 +199,11 @@ export default function SignupForm() {
                   </label>
                 </div>
 
+                {/* Submit button */}
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11 bg-[#3a5b22] hover:bg-[#2e4a1b] rounded-lg text-sm font-semibold font-['Poppins'] tracking-wide"
+                  className="w-full h-11 bg-[#3a5b22] hover:bg-[#2e4a1b] rounded-lg text-sm font-semibold font-serif tracking-wide"
                 >
                   {loading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -328,6 +211,7 @@ export default function SignupForm() {
                   Sign Up
                 </Button>
 
+                {/* Separator */}
                 <div className="relative flex items-center py-4">
                   <Separator className="w-full" />
                   <div className="absolute left-1/2 transform -translate-x-1/2 px-4 bg-white">
@@ -337,11 +221,12 @@ export default function SignupForm() {
                   </div>
                 </div>
 
+                {/* Social login buttons */}
                 <div className="flex gap-4">
                   <Button
                     type="button"
                     variant="outline"
-                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-['Poppins'] text-gray-700 border-gray-300"
+                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-serif text-gray-700 border-gray-300"
                   >
                     <img
                       className="w-6 h-6 mr-2.5"
@@ -354,7 +239,7 @@ export default function SignupForm() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-['Poppins'] text-gray-700 border-gray-300"
+                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-serif text-gray-700 border-gray-300"
                   >
                     <img
                       className="w-6 h-6 mr-2.5"
@@ -365,6 +250,7 @@ export default function SignupForm() {
                   </Button>
                 </div>
 
+                {/* Sign in link */}
                 <div className="text-center mt-6">
                   <p className="text-sm text-gray-600">
                     Have an account?{" "}
@@ -381,6 +267,7 @@ export default function SignupForm() {
           </Card>
         </div>
 
+        {/* Image section */}
         <div className="hidden md:block md:w-1/2">
           <img
             className="h-full w-full object-cover"

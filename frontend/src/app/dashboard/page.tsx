@@ -27,9 +27,15 @@ const DashboardPage = (): JSX.Element => {
       setIsSidebarCollapsed(e.detail.collapsed);
     };
 
-    window.addEventListener("sidebar-toggle" as any, handleSidebarToggle);
+    window.addEventListener(
+      "sidebar-toggle",
+      handleSidebarToggle as EventListener
+    );
     return () => {
-      window.removeEventListener("sidebar-toggle" as any, handleSidebarToggle);
+      window.removeEventListener(
+        "sidebar-toggle",
+        handleSidebarToggle as EventListener
+      );
     };
   }, [user, router]);
 

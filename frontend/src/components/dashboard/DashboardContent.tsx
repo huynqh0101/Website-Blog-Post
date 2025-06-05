@@ -7,7 +7,6 @@ import { QuickActions } from "./components/QuickActions";
 import { AuthorProfile } from "./components/AuthorProfile";
 import { RecentArticles } from "./components/RecentArticles";
 import { useAuth } from "@/context/authContext";
-import { toast } from "sonner";
 
 export const DashboardContent = () => {
   const { user } = useAuth();

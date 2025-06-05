@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useArticleForm } from "@/hooks/UseArticleFormProps";
@@ -188,7 +188,7 @@ export default function EditArticlePage() {
         }
 
         const currentArticle = currentResult.data;
-        const articleData: any = {};
+        const articleData: Record<string, unknown> = {};
 
         // Efficiently compare and add only changed fields
         if (title !== (currentArticle.title || "")) articleData.title = title;
@@ -210,7 +210,8 @@ export default function EditArticlePage() {
         articleData.blocks = formatBlocksForAPI(blocks);
 
         // Handle category changes
-        let currentCategoryId = currentArticle.category?.id?.toString() || "0";
+        const currentCategoryId =
+          currentArticle.category?.id?.toString() || "0";
         if (
           categoryId !== currentCategoryId &&
           categoryId &&

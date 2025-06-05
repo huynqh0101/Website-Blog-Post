@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import ArticleList from "@/components/articles/ArticleList";
-import BannerSlider from "@/components/home/BannerSlider";
 import { Advertisement } from "@/components/home/advertisements/Advertisement";
 import { ArticleHighlightSection } from "@/components/articles/ArticleHighlightSection";
 import { CategoryFilter } from "@/components/articles/CategoryFilter";

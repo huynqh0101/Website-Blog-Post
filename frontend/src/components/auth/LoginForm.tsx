@@ -1,149 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
-import { toast } from "sonner";
-import { useAuth } from "@/context/authContext";
 import { Checkbox } from "../ui/checkbox";
 import { Separator } from "../ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-
-interface LoginFormData {
-  identifier: string;
-  password: string;
-}
+import { useLogin } from "@/hooks/useLogin";
+import { authService } from "@/services/authService";
 
 export default function LoginForm() {
   const router = useRouter();
-  const { login } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [formData, setFormData] = useState<LoginFormData>({
-    identifier: "",
-    password: "",
-  });
+  const {
+    formData,
+    loading,
+    showPassword,
+    handleChange,
+    handleSubmit,
+    togglePasswordVisibility,
+  } = useLogin();
 
+  // Check if already authenticated
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true);
-      router.push("/"); // Redirect to home if already logged in
+    if (authService.isAuthenticated()) {
+      router.push("/");
     }
   }, [router]);
 
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  // Handle signup navigation
+  const handleSignUp = () => router.push("/signup");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      // 1. Login attempt
-      const loginResponse = await fetch(
-        "http://localhost:1337/api/auth/local",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            identifier: formData.identifier,
-            password: formData.password,
-          }),
-        }
-      );
-
-      const loginData = await loginResponse.json();
-
-      if (!loginResponse.ok) {
-        throw new Error(loginData.error?.message || "Login failed");
-      }
-
-      console.log("Login successful, checking if user is author...");
-
-      // 2. Check if user is an author
-      const email = encodeURIComponent(formData.identifier);
-      const checkAuthorResponse = await fetch(
-        `http://localhost:1337/api/authors?filters[email][$eq]=${email}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${loginData.jwt}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!checkAuthorResponse.ok) {
-        console.error("Author check failed:", await checkAuthorResponse.text());
-        // If author check fails, proceed as regular user
-        login(loginData.jwt, {
-          ...loginData.user,
-          role: "user",
-        });
-        toast.success("Login successful as user");
-        router.push("/");
-        return;
-      }
-
-      const authorData = await checkAuthorResponse.json();
-      console.log("Author check response:", authorData);
-
-      // Determine user role
-      const userRole =
-        authorData.data && authorData.data.length > 0 ? "author" : "user";
-      console.log("Determined role:", userRole);
-
-      if (
-        userRole === "author" &&
-        authorData.data &&
-        authorData.data.length > 0
-      ) {
-        const authorDocumentId = authorData.data[0].documentId;
-        localStorage.setItem("authorDocumentId", authorDocumentId);
-        console.log("Author documentId saved:", authorDocumentId);
-      }
-      login(loginData.jwt, {
-        ...loginData.user,
-        role: userRole,
-      });
-
-      toast.success(`Login successful as ${userRole}!`);
-      router.push("/");
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error(error instanceof Error ? error.message : "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignUp = () => {
-    router.push("/signup");
-  };
-
-  // Return early if already authenticated
-  if (isAuthenticated) {
+  // Check if already authenticated
+  if (authService.isAuthenticated()) {
     return null;
   }
 
   return (
-    <div className="bg-white flex flex-row justify-center w-full min-h-screen">
+    <div className="bg-white flex flex-row justify-center w-full min-h-screen ">
       <div className="bg-white w-full max-w-[1000px] relative flex shadow-lg rounded-lg overflow-hidden my-8">
         <div className="flex-1 py-8 px-6 flex justify-center items-center">
           <Card className="border-none shadow-none w-full max-w-[350px]">
             <CardContent className="p-0">
+              {/* Form header */}
               <div className="mb-8">
                 <h1 className="text-3xl font-semibold font-['Poppins'] text-gray-900 tracking-tight">
                   Welcome back!
@@ -154,51 +54,60 @@ export default function LoginForm() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Email field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-['Poppins'] text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700">
                     Email address
                   </label>
-                  <Input
-                    type="email"
-                    name="identifier"
-                    placeholder="Enter your email"
-                    required
-                    className="h-10 text-sm font-['Poppins'] rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22]"
-                    value={formData.identifier}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-semibold font-['Poppins'] text-gray-700">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Enter your password"
-                        className="h-10 text-sm font-['Poppins'] rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pr-10"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Mail className="h-4 w-4 text-gray-400" />
                     </div>
+                    <Input
+                      type="email"
+                      name="identifier"
+                      placeholder="Enter your email"
+                      required
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10"
+                      value={formData.identifier}
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
 
+                {/* Password field */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold font-serif text-gray-700">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="Enter your password"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Remember me checkbox */}
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="remember_me"
@@ -212,6 +121,7 @@ export default function LoginForm() {
                   </label>
                 </div>
 
+                {/* Submit button */}
                 <Button
                   type="submit"
                   disabled={loading}
@@ -224,6 +134,7 @@ export default function LoginForm() {
                   )}
                 </Button>
 
+                {/* Separator */}
                 <div className="relative flex items-center py-4">
                   <Separator className="w-full" />
                   <div className="absolute left-1/2 transform -translate-x-1/2 px-4 bg-white">
@@ -233,10 +144,11 @@ export default function LoginForm() {
                   </div>
                 </div>
 
+                {/* Social login buttons */}
                 <div className="flex gap-4">
                   <Button
                     variant="outline"
-                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-['Poppins'] text-gray-700 border-gray-300"
+                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-serif text-gray-700 border-gray-300"
                   >
                     <img
                       className="w-6 h-6 mr-2.5"
@@ -248,7 +160,7 @@ export default function LoginForm() {
 
                   <Button
                     variant="outline"
-                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-['Poppins'] text-gray-700 border-gray-300"
+                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-serif text-gray-700 border-gray-300"
                   >
                     <img
                       className="w-6 h-6 mr-2.5"
@@ -259,6 +171,7 @@ export default function LoginForm() {
                   </Button>
                 </div>
 
+                {/* Sign up link */}
                 <div className="text-center mt-6">
                   <p className="text-sm text-gray-600">
                     Don't have an account?{" "}
@@ -275,6 +188,7 @@ export default function LoginForm() {
           </Card>
         </div>
 
+        {/* Image section */}
         <div className="hidden md:block md:w-1/2">
           <img
             className="h-full w-full object-cover"

@@ -19,7 +19,7 @@ export async function generateMetadata({
       title: article.title,
       description: article.description,
     };
-  } catch (error) {
+  } catch {
     return {
       title: "Article Not Found",
       description: "The requested article could not be found",
@@ -95,7 +95,7 @@ export default async function ArticlePage({
         </div>
       </>
     );
-  } catch (error) {
+  } catch {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-8 bg-white dark:bg-slate-800 rounded-xl shadow-md">
@@ -117,8 +117,8 @@ export default async function ArticlePage({
             Article Not Found
           </h1>
           <p className="mt-4 text-gray-600 dark:text-gray-300">
-            We couldn't locate the article you're looking for. It may have been
-            moved or deleted.
+            We couldn&#39;t locate the article you&#39;re looking for. It may
+            have been moved or deleted.
           </p>
           <a
             href="/"

@@ -3,7 +3,6 @@
 # Intern PoC Project
 
 Dự án Proof of Concept (PoC), bao gồm cả frontend và backend được containerized với Docker.
-huy
 
 ## 🏗️ Kiến trúc dự án
 

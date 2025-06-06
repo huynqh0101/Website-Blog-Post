@@ -1,18 +1,32 @@
+"use client";
+import { useContext } from "react";
+import { ThemeContext } from "@/context/themeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export const NewsletterSection = () => {
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
+
   return (
-    <div className="w-full bg-[#e8f1f1] py-16">
+    <div
+      className={`w-full py-16 ${isDarkMode ? "bg-gray-800" : "bg-[#e8f1f1]"}`}
+    >
       <div className="container max-w-[1320px] px-4 md:px-6">
-        <h2 className="text-[28px] font-bold text-[#183354] text-center mb-8">
+        <h2
+          className={`text-[28px] font-bold text-center mb-8 ${
+            isDarkMode ? "text-white" : "text-[#183354]"
+          }`}
+        >
           Get Subscribe To Our Latest News & Update
         </h2>
         <div className="flex flex-col md:flex-row gap-4 justify-center">
           <div className="relative md:w-[350px]">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <svg
-                className="w-5 h-5 text-gray-500"
+                className={`w-5 h-5 ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -25,14 +39,20 @@ export const NewsletterSection = () => {
               </svg>
             </div>
             <Input
-              className="h-[50px] bg-white rounded-md pl-10 w-full"
+              className={`h-[50px] rounded-md pl-10 w-full ${
+                isDarkMode
+                  ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                  : "bg-white border-gray-300 text-black"
+              }`}
               placeholder="Name"
             />
           </div>
           <div className="relative md:w-[350px]">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <svg
-                className="w-5 h-5 text-gray-500"
+                className={`w-5 h-5 ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +62,11 @@ export const NewsletterSection = () => {
               </svg>
             </div>
             <Input
-              className="h-[50px] bg-white rounded-md pl-10 w-full"
+              className={`h-[50px] rounded-md pl-10 w-full ${
+                isDarkMode
+                  ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                  : "bg-white border-gray-300 text-black"
+              }`}
               placeholder="E-mail"
               type="email"
             />

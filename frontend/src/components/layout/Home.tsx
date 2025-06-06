@@ -1,4 +1,6 @@
 "use client";
+import { useContext } from "react";
+import { ThemeContext } from "@/context/themeContext";
 import newsData from "@/constants/newsData";
 import { NewsletterSection } from "../home/newsletter/NewsletterSection";
 import { EditorsPicksSection } from "../home/sections/EditorsPicksSection";
@@ -12,6 +14,7 @@ import { MainSidebar } from "../home/sidebars/MainSidebar";
 import { ArticleCard } from "../home/ArticleCard";
 import { FeaturedArticle } from "../home/FeaturedArticle";
 import BannerSlider from "../home/BannerSlider";
+
 const {
   businessArticle,
   techArticle,
@@ -27,8 +30,15 @@ const {
 } = newsData;
 
 export const MainByAnima = () => {
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
+
   return (
-    <div className="w-full mt-[80px] flex flex-col items-center">
+    <div
+      className={`w-full mt-[80px] flex flex-col items-center transition-colors duration-300 ${
+        isDarkMode ? "bg-gray-900" : "bg-white"
+      }`}
+    >
       <div className="w-full max-w-[1320px] px-4 md:px-6 mb-8">
         <BannerSlider
           className="rounded-xl shadow-md"
@@ -36,11 +46,19 @@ export const MainByAnima = () => {
           width="100%"
         />
       </div>
-      <div className="container max-w-[1320px] flex flex-col md:flex-row gap-8 px-4 md:px-6">
+      <div
+        className={`container max-w-[1320px] flex flex-col md:flex-row gap-8 px-4 md:px-6 ${
+          isDarkMode ? "text-white" : "text-black"
+        }`}
+      >
         {/* Main Content */}
         <div className="flex-1 max-w-[990px]">
           <div className="flex flex-col md:flex-row gap-8 relative">
-            <div className="md:hidden absolute h-full w-px bg-[#dfdfdf] left-1/3 top-0" />
+            <div
+              className={`md:hidden absolute h-full w-px left-1/3 top-0 ${
+                isDarkMode ? "bg-gray-700" : "bg-[#dfdfdf]"
+              }`}
+            />
 
             {/* Left Column */}
             <div className="flex flex-col gap-6 md:w-[289px]">
@@ -52,7 +70,9 @@ export const MainByAnima = () => {
                 author={businessArticle.author}
                 date={businessArticle.date}
                 image={businessArticle.image}
-                className="border-b border-[#d8d8d8] pb-4"
+                className={`border-b pb-4 ${
+                  isDarkMode ? "border-gray-700" : "border-[#d8d8d8]"
+                }`}
               />
               {/* Tech Article */}
               <ArticleCard
@@ -107,7 +127,11 @@ export const MainByAnima = () => {
       <EditorsPicksSection articles={editorsPicksArticles} />
 
       {/* World Top News Section */}
-      <div className="container max-w-[1320px] px-4 md:px-6 my-8">
+      <div
+        className={`container max-w-[1320px] px-4 md:px-6 my-8 ${
+          isDarkMode ? "text-white" : "text-black"
+        }`}
+      >
         <div className="flex flex-col md:flex-row gap-8">
           <div className="flex-1 max-w-[990px]">
             <WorldTopNewsSection worldTopNewsArticles={worldTopNewsArticles} />

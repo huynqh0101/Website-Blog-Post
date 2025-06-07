@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { ThemeContext } from "@/context/themeContext";
 import { Article } from "@/types/article";
 import { articleService } from "@/services/articleService";
 import ArticleSkeleton from "../ui/article-skeleton";
@@ -18,6 +19,8 @@ export default function BlogList() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [direction, setDirection] = useState(0);
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   const handlePageChange = (newPage: number) => {
     if (newPage === page) return;
@@ -162,7 +165,15 @@ export default function BlogList() {
         onClick={() => handlePageChange(1)}
         variant={page === 1 ? "default" : "outline"}
         size="sm"
-        className={`w-10 h-10 p-0 ${page === 1 ? "bg-primary text-white" : ""}`}
+        className={`w-10 h-10 p-0 transition-colors ${
+          page === 1
+            ? isDarkMode
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-primary text-white hover:bg-primary/90"
+            : isDarkMode
+            ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+            : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+        }`}
       >
         1
       </Button>
@@ -184,7 +195,11 @@ export default function BlogList() {
           key="start-ellipsis"
           variant="ghost"
           size="sm"
-          className="w-10 h-10 p-0"
+          className={`w-10 h-10 p-0 ${
+            isDarkMode
+              ? "text-gray-500 hover:text-gray-400"
+              : "text-gray-400 hover:text-gray-500"
+          }`}
           disabled
         >
           <MoreHorizontal className="h-4 w-4" />
@@ -200,8 +215,14 @@ export default function BlogList() {
           onClick={() => handlePageChange(i)}
           variant={page === i ? "default" : "outline"}
           size="sm"
-          className={`w-10 h-10 p-0 ${
-            page === i ? "bg-primary text-white" : ""
+          className={`w-10 h-10 p-0 transition-colors ${
+            page === i
+              ? isDarkMode
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-primary text-white hover:bg-primary/90"
+              : isDarkMode
+              ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
           }`}
         >
           {i}
@@ -216,7 +237,11 @@ export default function BlogList() {
           key="end-ellipsis"
           variant="ghost"
           size="sm"
-          className="w-10 h-10 p-0"
+          className={`w-10 h-10 p-0 ${
+            isDarkMode
+              ? "text-gray-500 hover:text-gray-400"
+              : "text-gray-400 hover:text-gray-500"
+          }`}
           disabled
         >
           <MoreHorizontal className="h-4 w-4" />
@@ -232,8 +257,14 @@ export default function BlogList() {
           onClick={() => handlePageChange(totalPages)}
           variant={page === totalPages ? "default" : "outline"}
           size="sm"
-          className={`w-10 h-10 p-0 ${
-            page === totalPages ? "bg-primary text-white" : ""
+          className={`w-10 h-10 p-0 transition-colors ${
+            page === totalPages
+              ? isDarkMode
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-primary text-white hover:bg-primary/90"
+              : isDarkMode
+              ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
           }`}
         >
           {totalPages}
@@ -245,9 +276,19 @@ export default function BlogList() {
   };
 
   return (
-    <section className="container p-4 mx-auto">
+    <section
+      className={`container p-4 mx-auto ${
+        isDarkMode ? "bg-gray-900" : "bg-white"
+      }`}
+    >
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Blogs</h2>
+        <h2
+          className={`text-3xl font-bold transition-colors ${
+            isDarkMode ? "text-white" : "text-gray-900"
+          }`}
+        >
+          Blogs
+        </h2>
         <div className="flex-shrink-0">
           <CategoryFilter onCategoryChange={handleCategoryChange} />
         </div>
@@ -297,12 +338,12 @@ export default function BlogList() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-center py-20 bg-gray-50 rounded-2xl shadow-inner border border-gray-100"
+                  className="text-center py-20 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-inner border border-gray-100 dark:border-gray-700"
                 >
-                  <p className="text-xl text-gray-500 font-medium">
+                  <p className="text-xl text-gray-500 dark:text-gray-400 font-medium">
                     No blogs found in this category
                   </p>
-                  <p className="text-sm text-gray-400 mt-3">
+                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-3">
                     Try selecting a different category or check back later
                   </p>
                 </motion.div>
@@ -313,7 +354,9 @@ export default function BlogList() {
           {filteredBlogs.length > 0 && totalPages > 1 && (
             <div className="mt-10 flex flex-col items-center space-y-4">
               <motion.div
-                className="text-sm text-gray-500"
+                className={`text-sm transition-colors ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
@@ -326,7 +369,15 @@ export default function BlogList() {
                   size="sm"
                   onClick={() => handlePageChange(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="w-10 h-10 p-0"
+                  className={`w-10 h-10 p-0 transition-colors ${
+                    page === 1
+                      ? isDarkMode
+                        ? "bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed"
+                        : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                      : isDarkMode
+                      ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+                      : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -340,7 +391,15 @@ export default function BlogList() {
                     handlePageChange(Math.min(totalPages, page + 1))
                   }
                   disabled={page === totalPages}
-                  className="w-10 h-10 p-0"
+                  className={`w-10 h-10 p-0 transition-colors ${
+                    page === totalPages
+                      ? isDarkMode
+                        ? "bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed"
+                        : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                      : isDarkMode
+                      ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+                      : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>

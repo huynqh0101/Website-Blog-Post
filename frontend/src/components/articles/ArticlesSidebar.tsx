@@ -2,6 +2,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Search } from "lucide-react";
+import { useContext } from "react";
+import { ThemeContext } from "@/context/themeContext";
 import newsData from "@/constants/newsData";
 import BannerSlider from "../home/BannerSlider";
 
@@ -9,6 +11,8 @@ export const ArticlesSidebar = () => {
   // Sử dụng topStoriesArticles thay vì topRankedArticles cho phần Popular
   // vì topStoriesArticles có trường image
   const { topRankedArticles, topStoriesArticles, articlesNews } = newsData;
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   return (
     <div className="space-y-8">
@@ -128,16 +132,36 @@ export const ArticlesSidebar = () => {
       </div>
 
       {/* Newsletter Mini - Không thay đổi */}
-      <div className="bg-white dark:bg-slate-800 p-5 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-bold mb-4">Newsletter</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <div
+        className={`p-5 rounded-lg shadow-sm border ${
+          isDarkMode
+            ? "bg-slate-800 border-gray-700"
+            : "bg-white border-gray-200"
+        }`}
+      >
+        <h3
+          className={`text-lg font-bold mb-4 ${
+            isDarkMode ? "text-white" : "text-gray-900"
+          }`}
+        >
+          Newsletter
+        </h3>
+        <p
+          className={`text-sm mb-4 ${
+            isDarkMode ? "text-gray-400" : "text-gray-600"
+          }`}
+        >
           Subscribe to our newsletter to get the latest updates.
         </p>
         <form className="space-y-3">
           <input
             type="email"
             placeholder="Your email address"
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 dark:bg-slate-700"
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
+              isDarkMode
+                ? "border-gray-600 bg-slate-700 text-white placeholder:text-gray-400"
+                : "border-gray-300 bg-gray-50 text-black"
+            }`}
             required
           />
           <button

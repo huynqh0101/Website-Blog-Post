@@ -11,9 +11,9 @@ export const revalidate = 3600; // Revalidate at most once per hour
 
 export default function BlogsPage() {
   return (
-    <main className="pt-8 pb-20">
-      {/* Hero Banner3333 */}
-      <div className="relative bg-gradient-to-r from-blue-600 to-indigo-800 py-16 mb-12">
+    <main className="pt-8 pb-20 bg-white dark:bg-gray-900 transition-colors">
+      {/* Hero Banner */}
+      <div className="relative bg-gradient-to-r from-blue-600 to-indigo-800 dark:from-blue-700 dark:to-indigo-900 py-16 mb-12">
         <div className="absolute inset-0 overflow-hidden opacity-20">
           <div
             className="absolute inset-0 bg-repeat"
@@ -28,19 +28,19 @@ export default function BlogsPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Our Blog
             </h1>
-            <p className="text-blue-100 text-lg md:text-xl mb-8">
+            <p className="text-blue-100 dark:text-blue-200 text-lg md:text-xl mb-8">
               Discover insights, stories, and expert perspectives
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="#featured"
-                className="bg-white text-blue-700 hover:bg-blue-50 transition px-6 py-3 rounded-lg font-medium shadow-md"
+                className="bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 transition px-6 py-3 rounded-lg font-medium shadow-md"
               >
                 Featured
               </Link>
               <Link
                 href="#latest"
-                className="bg-blue-700 text-white hover:bg-blue-800 transition px-6 py-3 rounded-lg font-medium shadow-md border border-blue-400"
+                className="bg-blue-700 dark:bg-blue-600 text-white hover:bg-blue-800 dark:hover:bg-blue-700 transition px-6 py-3 rounded-lg font-medium shadow-md border border-blue-400 dark:border-blue-500"
               >
                 Latest Posts
               </Link>
@@ -65,7 +65,7 @@ export default function BlogsPage() {
       <div className="w-full max-w-[1320px] px-4 md:px-6 mb-8 mx-auto">
         <Suspense
           fallback={
-            <div className="h-10 bg-gray-300 rounded animate-pulse"></div>
+            <div className="h-10 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
           }
         >
           <TrendingTagsBar />
@@ -78,8 +78,10 @@ export default function BlogsPage() {
           {/* Main Content */}
           <div className="flex-1" id="latest">
             {/* Filter Bar */}
-            <div className="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div className="font-medium text-gray-700">Filter by:</div>
+            <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div className="font-medium text-gray-700 dark:text-gray-300">
+                Filter by:
+              </div>
               <div className="flex flex-wrap gap-2">
                 {[
                   "All",
@@ -93,8 +95,8 @@ export default function BlogsPage() {
                     key={category}
                     className={`px-4 py-2 rounded-full text-sm transition ${
                       category === "All"
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                        ? "bg-blue-600 dark:bg-blue-500 text-white"
+                        : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600"
                     }`}
                   >
                     {category}
@@ -105,10 +107,10 @@ export default function BlogsPage() {
                 <input
                   type="text"
                   placeholder="Search blogs..."
-                  className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
                 <svg
-                  className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -131,17 +133,17 @@ export default function BlogsPage() {
                   {[...Array(6)].map((_, i) => (
                     <div
                       key={i}
-                      className="flex flex-col rounded-lg overflow-hidden shadow-md bg-white animate-pulse"
+                      className="flex flex-col rounded-lg overflow-hidden shadow-md bg-white dark:bg-gray-800 animate-pulse"
                     >
-                      <div className="h-48 bg-gray-300"></div>
+                      <div className="h-48 bg-gray-300 dark:bg-gray-700"></div>
                       <div className="p-4 flex flex-col gap-3">
-                        <div className="h-4 bg-gray-300 w-1/3 rounded"></div>
-                        <div className="h-6 bg-gray-300 w-5/6 rounded"></div>
-                        <div className="h-4 bg-gray-300 w-full rounded"></div>
-                        <div className="h-4 bg-gray-300 w-4/5 rounded"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 w-1/3 rounded"></div>
+                        <div className="h-6 bg-gray-300 dark:bg-gray-700 w-5/6 rounded"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 w-full rounded"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 w-4/5 rounded"></div>
                         <div className="flex gap-2 mt-2">
-                          <div className="h-8 bg-gray-300 w-8 rounded-full"></div>
-                          <div className="h-4 bg-gray-300 w-24 rounded self-center"></div>
+                          <div className="h-8 bg-gray-300 dark:bg-gray-700 w-8 rounded-full"></div>
+                          <div className="h-4 bg-gray-300 dark:bg-gray-700 w-24 rounded self-center"></div>
                         </div>
                       </div>
                     </div>
@@ -166,10 +168,12 @@ export default function BlogsPage() {
             {/* Featured Posts Section */}
             <div id="featured" className="my-12">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Featured Posts</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  Featured Posts
+                </h2>
                 <Link
                   href="#"
-                  className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium flex items-center"
                 >
                   View all
                   <svg
@@ -191,7 +195,7 @@ export default function BlogsPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* post 1 */}
-                <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
                   <div className="relative h-48 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/80 to-purple-600/80 opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex items-center justify-center">
                       <span className="text-white font-medium text-sm px-3 py-1.5 border border-white/30 rounded-lg backdrop-blur-sm">
@@ -206,17 +210,17 @@ export default function BlogsPage() {
                   </div>
                   <div className="p-4">
                     <div className="flex items-center mb-1.5">
-                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded">
+                      <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2 py-0.5 rounded">
                         Technology
                       </span>
-                      <span className="ml-auto text-xs text-gray-500">
+                      <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">
                         5 days ago
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold mb-1.5">
+                    <h3 className="text-lg font-bold mb-1.5 text-gray-900 dark:text-gray-100">
                       The Future of Web Development in 2024
                     </h3>
-                    <p className="text-sm text-gray-600 mb-3">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                       Exploring the latest trends and technologies shaping the
                       future of web development and what developers need to
                       know.
@@ -228,15 +232,19 @@ export default function BlogsPage() {
                         className="w-8 h-8 rounded-full mr-2"
                       />
                       <div>
-                        <p className="font-medium text-sm">John Doe</p>
-                        <p className="text-xs text-gray-500">Web Developer</p>
+                        <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                          John Doe
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Web Developer
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* post 2 */}
-                <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
                   <div className="relative h-48 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/80 to-purple-600/80 opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex items-center justify-center">
                       <span className="text-white font-medium text-sm px-3 py-1.5 border border-white/30 rounded-lg backdrop-blur-sm">
@@ -251,17 +259,17 @@ export default function BlogsPage() {
                   </div>
                   <div className="p-4">
                     <div className="flex items-center mb-1.5">
-                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded">
                         Design
                       </span>
-                      <span className="ml-auto text-xs text-gray-500">
+                      <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">
                         3 days ago
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold mb-1.5">
+                    <h3 className="text-lg font-bold mb-1.5 text-gray-900 dark:text-gray-100">
                       UI/UX Design Principles for Modern Applications
                     </h3>
-                    <p className="text-sm text-gray-600 mb-3">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                       Learn how to create intuitive and engaging user
                       experiences that delight your application users.
                     </p>
@@ -272,8 +280,12 @@ export default function BlogsPage() {
                         className="w-8 h-8 rounded-full mr-2"
                       />
                       <div>
-                        <p className="font-medium text-sm">Jane Smith</p>
-                        <p className="text-xs text-gray-500">UX Designer</p>
+                        <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                          Jane Smith
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          UX Designer
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -285,9 +297,11 @@ export default function BlogsPage() {
           {/* Sidebar */}
           <div className="lg:w-[330px] space-y-8">
             {/* Popular Categories */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              <div className="p-5 border-b border-gray-100">
-                <h3 className="font-bold text-lg">Popular Categories</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+              <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                  Popular Categories
+                </h3>
               </div>
               <div className="p-5">
                 <ul className="space-y-2">
@@ -301,12 +315,12 @@ export default function BlogsPage() {
                     <li key={category}>
                       <Link
                         href="#"
-                        className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md group"
+                        className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md group"
                       >
-                        <span className="text-gray-700 group-hover:text-blue-600">
+                        <span className="text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
                           {category}
                         </span>
-                        <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full group-hover:bg-blue-100 group-hover:text-blue-600">
+                        <span className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-full group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-300">
                           {Math.floor(Math.random() * 50) + 10}
                         </span>
                       </Link>
@@ -317,22 +331,22 @@ export default function BlogsPage() {
             </div>
 
             {/* Newsletter Signup */}
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-800 rounded-xl p-6 text-white">
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-800 dark:from-blue-700 dark:to-indigo-900 rounded-xl p-6 text-white">
               <h3 className="text-xl font-bold mb-2">
                 Subscribe to our Newsletter
               </h3>
-              <p className="text-blue-100 mb-4">
+              <p className="text-blue-100 dark:text-blue-200 mb-4">
                 Get the latest blog posts and updates directly to your inbox.
               </p>
               <form className="space-y-3">
                 <input
                   type="email"
                   placeholder="Your email address"
-                  className="w-full px-4 py-3 rounded-lg text-gray-800 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg text-gray-800 dark:text-gray-900 bg-white dark:bg-gray-100 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="w-full bg-white text-blue-600 hover:bg-blue-50 font-medium py-3 rounded-lg transition"
+                  className="w-full bg-white dark:bg-gray-100 text-blue-600 dark:text-blue-700 hover:bg-blue-50 dark:hover:bg-gray-200 font-medium py-3 rounded-lg transition"
                 >
                   Subscribe
                 </button>
@@ -340,14 +354,16 @@ export default function BlogsPage() {
             </div>
 
             {/* Popular Posts */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              <div className="p-5 border-b border-gray-100">
-                <h3 className="font-bold text-lg">Popular Posts</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+              <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                  Popular Posts
+                </h3>
               </div>
               <div>
                 <Link
                   href="#"
-                  className="flex p-4 border-b border-gray-100 hover:bg-gray-50"
+                  className="flex p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <img
                     src={`sports-post04-jpg.png`}
@@ -355,15 +371,17 @@ export default function BlogsPage() {
                     className="w-16 h-16 rounded-md object-cover"
                   />
                   <div className="ml-4">
-                    <h4 className="font-medium text-gray-800 line-clamp-2">
+                    <h4 className="font-medium text-gray-800 dark:text-gray-200 line-clamp-2">
                       How to Improve Your Productivity with Simple Techniques
                     </h4>
-                    <p className="text-sm text-gray-500 mt-1">May {10}, 2024</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      May {10}, 2024
+                    </p>
                   </div>
                 </Link>
                 <Link
                   href="#"
-                  className="flex p-4 border-b border-gray-100 hover:bg-gray-50"
+                  className="flex p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <img
                     src={`sports-post01-jpg.png`}
@@ -371,15 +389,17 @@ export default function BlogsPage() {
                     className="w-16 h-16 rounded-md object-cover"
                   />
                   <div className="ml-4">
-                    <h4 className="font-medium text-gray-800 line-clamp-2">
+                    <h4 className="font-medium text-gray-800 dark:text-gray-200 line-clamp-2">
                       How to Improve Your Productivity with Simple Techniques
                     </h4>
-                    <p className="text-sm text-gray-500 mt-1">May {10}, 2024</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      May {10}, 2024
+                    </p>
                   </div>
                 </Link>
                 <Link
                   href="#"
-                  className="flex p-4 border-b border-gray-100 hover:bg-gray-50"
+                  className="flex p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <img
                     src={`sports-post02-jpg.png`}
@@ -387,15 +407,17 @@ export default function BlogsPage() {
                     className="w-16 h-16 rounded-md object-cover"
                   />
                   <div className="ml-4">
-                    <h4 className="font-medium text-gray-800 line-clamp-2">
+                    <h4 className="font-medium text-gray-800 dark:text-gray-200 line-clamp-2">
                       How to Improve Your Productivity with Simple Techniques
                     </h4>
-                    <p className="text-sm text-gray-500 mt-1">May {10}, 2024</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      May {10}, 2024
+                    </p>
                   </div>
                 </Link>
                 <Link
                   href="#"
-                  className="flex p-4 border-b border-gray-100 hover:bg-gray-50"
+                  className="flex p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <img
                     src={`sports-post03-jpg.png`}
@@ -403,10 +425,12 @@ export default function BlogsPage() {
                     className="w-16 h-16 rounded-md object-cover"
                   />
                   <div className="ml-4">
-                    <h4 className="font-medium text-gray-800 line-clamp-2">
+                    <h4 className="font-medium text-gray-800 dark:text-gray-200 line-clamp-2">
                       How to Improve Your Productivity with Simple Techniques
                     </h4>
-                    <p className="text-sm text-gray-500 mt-1">May {10}, 2024</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      May {10}, 2024
+                    </p>
                   </div>
                 </Link>
               </div>

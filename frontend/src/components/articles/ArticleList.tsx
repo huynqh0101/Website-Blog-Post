@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { ThemeContext } from "@/context/themeContext";
 import { Article } from "@/types/article";
 import { articleService } from "@/services/articleService";
 import ArticleSkeleton from "../ui/article-skeleton";
@@ -8,7 +9,7 @@ import CategoryFilter from "../news/CategoryFilter";
 import { ArticleCard } from "../ArticleCard";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion"; // Thêm import
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ArticleList() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -19,16 +20,18 @@ export default function ArticleList() {
   const [totalPages, setTotalPages] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [direction, setDirection] = useState(0); // -1: đi về trước, 1: đi về sau, 0: khởi tạo
+  const [direction, setDirection] = useState(0);
+
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   const handlePageChange = (newPage: number) => {
     if (newPage === page) return;
-
-    // Xác định hướng chuyển trang để áp dụng animation tương ứng
     setDirection(newPage > page ? 1 : -1);
     setPage(newPage);
     loadArticles(newPage, true);
   };
+
   const variants = {
     enter: (direction: number) => {
       return {
@@ -49,6 +52,7 @@ export default function ArticleList() {
       };
     },
   };
+
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
@@ -77,7 +81,7 @@ export default function ArticleList() {
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    setPage(1); // Khởi tạo lại trang khi đổi danh mục
+    setPage(1);
 
     if (!category) {
       setFilteredArticles(articles);
@@ -97,14 +101,12 @@ export default function ArticleList() {
         setLoadingMore(true);
       }
 
-      // Thêm tham số để lấy thông tin phân trang
       const response = await articleService.getAllArticlesWithPagination(
         9,
         pageNum
       );
       const newArticles = response.data;
 
-      // Cập nhật thông tin tổng số trang
       setTotalPages(response.meta.pagination.pageCount);
 
       if (newArticles.length === 0) {
@@ -141,46 +143,54 @@ export default function ArticleList() {
     }
   };
 
-  // Tải trang đầu tiên khi component mount
   useEffect(() => {
     loadArticles(1, true);
   }, []);
 
-  // Hàm tạo các nút phân trang
   const renderPaginationButtons = () => {
     const buttons = [];
-    const maxVisiblePages = 5; // Số lượng nút trang hiển thị tối đa
+    const maxVisiblePages = 5;
 
-    // Luôn hiển thị trang đầu tiên
+    // Trang đầu tiên
     buttons.push(
       <Button
         key={1}
         onClick={() => handlePageChange(1)}
         variant={page === 1 ? "default" : "outline"}
         size="sm"
-        className={`w-10 h-10 p-0 ${page === 1 ? "bg-primary text-white" : ""}`}
+        className={`w-10 h-10 p-0 transition-colors ${
+          page === 1
+            ? isDarkMode
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-primary text-white hover:bg-primary/90"
+            : isDarkMode
+            ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+            : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+        }`}
       >
         1
       </Button>
     );
 
-    // Tính toán phạm vi trang hiển thị
     let startPage = Math.max(2, page - Math.floor((maxVisiblePages - 3) / 2));
     let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 4);
 
-    // Điều chỉnh lại phạm vi nếu cần
     if (endPage - startPage < maxVisiblePages - 4) {
       startPage = Math.max(2, endPage - (maxVisiblePages - 4));
     }
 
-    // Hiển thị dấu ... nếu có nhiều trang ở đầu
+    // Dấu ... đầu
     if (startPage > 2) {
       buttons.push(
         <Button
           key="start-ellipsis"
           variant="ghost"
           size="sm"
-          className="w-10 h-10 p-0"
+          className={`w-10 h-10 p-0 ${
+            isDarkMode
+              ? "text-gray-500 hover:text-gray-400"
+              : "text-gray-400 hover:text-gray-500"
+          }`}
           disabled
         >
           <MoreHorizontal className="h-4 w-4" />
@@ -188,7 +198,7 @@ export default function ArticleList() {
       );
     }
 
-    // Hiển thị các trang ở giữa
+    // Các trang ở giữa
     for (let i = startPage; i <= endPage; i++) {
       buttons.push(
         <Button
@@ -196,8 +206,14 @@ export default function ArticleList() {
           onClick={() => handlePageChange(i)}
           variant={page === i ? "default" : "outline"}
           size="sm"
-          className={`w-10 h-10 p-0 ${
-            page === i ? "bg-primary text-white" : ""
+          className={`w-10 h-10 p-0 transition-colors ${
+            page === i
+              ? isDarkMode
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-primary text-white hover:bg-primary/90"
+              : isDarkMode
+              ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
           }`}
         >
           {i}
@@ -205,14 +221,18 @@ export default function ArticleList() {
       );
     }
 
-    // Hiển thị dấu ... nếu có nhiều trang ở cuối
+    // Dấu ... cuối
     if (endPage < totalPages - 1) {
       buttons.push(
         <Button
           key="end-ellipsis"
           variant="ghost"
           size="sm"
-          className="w-10 h-10 p-0"
+          className={`w-10 h-10 p-0 ${
+            isDarkMode
+              ? "text-gray-500 hover:text-gray-400"
+              : "text-gray-400 hover:text-gray-500"
+          }`}
           disabled
         >
           <MoreHorizontal className="h-4 w-4" />
@@ -220,7 +240,7 @@ export default function ArticleList() {
       );
     }
 
-    // Luôn hiển thị trang cuối cùng nếu có nhiều hơn 1 trang
+    // Trang cuối cùng
     if (totalPages > 1) {
       buttons.push(
         <Button
@@ -228,8 +248,14 @@ export default function ArticleList() {
           onClick={() => handlePageChange(totalPages)}
           variant={page === totalPages ? "default" : "outline"}
           size="sm"
-          className={`w-10 h-10 p-0 ${
-            page === totalPages ? "bg-primary text-white" : ""
+          className={`w-10 h-10 p-0 transition-colors ${
+            page === totalPages
+              ? isDarkMode
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-primary text-white hover:bg-primary/90"
+              : isDarkMode
+              ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
           }`}
         >
           {totalPages}
@@ -241,9 +267,19 @@ export default function ArticleList() {
   };
 
   return (
-    <section className="container p-4 mx-auto">
+    <section
+      className={`container p-4 mx-auto ${
+        isDarkMode ? "bg-gray-900" : "bg-white"
+      }`}
+    >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Articles</h2>
+        <h2
+          className={`text-2xl font-bold transition-colors ${
+            isDarkMode ? "text-white" : "text-gray-900"
+          }`}
+        >
+          Articles
+        </h2>
         <div className="flex-shrink-0">
           <CategoryFilter onCategoryChange={handleCategoryChange} />
         </div>
@@ -293,7 +329,13 @@ export default function ArticleList() {
                   animate={{ opacity: 1 }}
                   className="text-center py-12"
                 >
-                  <p className="text-lg text-gray-500">No articles found.</p>
+                  <p
+                    className={`text-lg transition-colors ${
+                      isDarkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
+                    No articles found.
+                  </p>
                 </motion.div>
               )}
             </motion.div>
@@ -302,7 +344,9 @@ export default function ArticleList() {
           {filteredArticles.length > 0 && totalPages > 1 && (
             <div className="mt-10 flex flex-col items-center space-y-4">
               <motion.div
-                className="text-sm text-gray-500"
+                className={`text-sm transition-colors ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
@@ -315,7 +359,15 @@ export default function ArticleList() {
                   size="sm"
                   onClick={() => handlePageChange(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="w-10 h-10 p-0"
+                  className={`w-10 h-10 p-0 transition-colors ${
+                    page === 1
+                      ? isDarkMode
+                        ? "bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed"
+                        : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                      : isDarkMode
+                      ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+                      : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -329,7 +381,15 @@ export default function ArticleList() {
                     handlePageChange(Math.min(totalPages, page + 1))
                   }
                   disabled={page === totalPages}
-                  className="w-10 h-10 p-0"
+                  className={`w-10 h-10 p-0 transition-colors ${
+                    page === totalPages
+                      ? isDarkMode
+                        ? "bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed"
+                        : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                      : isDarkMode
+                      ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+                      : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>

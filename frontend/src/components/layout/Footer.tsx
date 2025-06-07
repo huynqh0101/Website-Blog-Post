@@ -1,3 +1,6 @@
+"use client";
+import { useContext } from "react";
+import { ThemeContext } from "@/context/themeContext";
 import Link from "next/link";
 import { Logo } from "./Navbar/components/Logo";
 import BannerSlider from "../home/BannerSlider";
@@ -11,24 +14,53 @@ import Image from "next/image";
 import { UnderlineDecoration } from "../ui/underLine";
 
 const Footer = (): JSX.Element => {
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
+
   return (
     <>
-      <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-500">
+      <div
+        className={`mt-12 pt-8 border-t text-center ${
+          isDarkMode
+            ? "border-gray-700 text-gray-400"
+            : "border-gray-200 text-gray-500"
+        }`}
+      >
         <BannerSlider height="15rem" />
       </div>
-      <footer className="w-full py-16 relative overflow-hidden bg-gradient-to-br from-blue-50 to-gray-100">
+      <footer
+        className={`w-full py-16 relative overflow-hidden ${
+          isDarkMode
+            ? "bg-gradient-to-br from-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-blue-50 to-gray-100"
+        }`}
+      >
         {/* Background decorative elements */}
         <div className="absolute inset-0 z-0">
           <div
-            className="absolute inset-0 opacity-10 bg-repeat"
+            className={`absolute inset-0 bg-repeat ${
+              isDarkMode ? "opacity-5" : "opacity-10"
+            }`}
             style={{
               backgroundImage:
                 'url(\'data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%234a90e2" fill-opacity="0.4" fill-rule="evenodd"%3E%3Cpath d="M0 40L40 0H20L0 20M40 40V20L20 40"/%3E%3C/g%3E%3C/svg%3E\')',
             }}
           ></div>
-          <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/50 to-transparent"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-blue-200 filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/4"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-indigo-200 filter blur-3xl opacity-20 translate-y-1/2 -translate-x-1/4"></div>
+          <div
+            className={`absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t to-transparent ${
+              isDarkMode ? "from-gray-900/50" : "from-white/50"
+            }`}
+          ></div>
+          <div
+            className={`absolute top-0 right-0 w-64 h-64 rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/4 ${
+              isDarkMode ? "bg-blue-600" : "bg-blue-200"
+            }`}
+          ></div>
+          <div
+            className={`absolute bottom-0 left-0 w-96 h-96 rounded-full filter blur-3xl opacity-20 translate-y-1/2 -translate-x-1/4 ${
+              isDarkMode ? "bg-indigo-600" : "bg-indigo-200"
+            }`}
+          ></div>
         </div>
 
         {/* Content with increased z-index to appear above the background */}
@@ -41,10 +73,18 @@ const Footer = (): JSX.Element => {
                   <Logo />
                 </div>
               </div>
-              <div className="border-l-2 border-blue-600 pl-4">
-                <p className="text-gray-700">
+              <div
+                className={`border-l-2 pl-4 ${
+                  isDarkMode ? "border-blue-400" : "border-blue-600"
+                }`}
+              >
+                <p className={isDarkMode ? "text-gray-300" : "text-gray-700"}>
                   <span className="font-medium">Journalism with purpose.</span>
-                  <span className="block text-sm text-gray-500 mt-1">
+                  <span
+                    className={`block text-sm mt-1 ${
+                      isDarkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
                     Since 2025
                   </span>
                 </p>
@@ -52,7 +92,11 @@ const Footer = (): JSX.Element => {
               <div className="flex space-x-3 mt-10">
                 <a
                   href="#"
-                  className="text-gray-500 hover:text-blue-600 transition-all"
+                  className={`transition-all ${
+                    isDarkMode
+                      ? "text-gray-400 hover:text-blue-400"
+                      : "text-gray-500 hover:text-blue-600"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +109,11 @@ const Footer = (): JSX.Element => {
                 </a>
                 <a
                   href="#"
-                  className="text-gray-500 hover:text-blue-600 transition-all"
+                  className={`transition-all ${
+                    isDarkMode
+                      ? "text-gray-400 hover:text-blue-400"
+                      : "text-gray-500 hover:text-blue-600"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +126,11 @@ const Footer = (): JSX.Element => {
                 </a>
                 <a
                   href="#"
-                  className="text-gray-500 hover:text-blue-600 transition-all"
+                  className={`transition-all ${
+                    isDarkMode
+                      ? "text-gray-400 hover:text-blue-400"
+                      : "text-gray-500 hover:text-blue-600"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -92,10 +144,16 @@ const Footer = (): JSX.Element => {
               </div>
             </div>
 
-            {/* Content column - adjusted for better alignment */}
+            {/* Content column */}
             <div className="flex flex-col space-y-4 md:items-start">
               <div className="space-y-2">
-                <h3 className="font-bold text-gray-800 text-xl">Content</h3>
+                <h3
+                  className={`font-bold text-xl ${
+                    isDarkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  Content
+                </h3>
                 <UnderlineDecoration />
               </div>
               <ul className="space-y-3">
@@ -103,7 +161,11 @@ const Footer = (): JSX.Element => {
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className="text-gray-600 hover:text-blue-600 hover:underline transition-colors"
+                      className={`hover:underline transition-colors ${
+                        isDarkMode
+                          ? "text-gray-300 hover:text-blue-400"
+                          : "text-gray-600 hover:text-blue-600"
+                      }`}
                     >
                       {link.title}
                     </Link>
@@ -112,10 +174,16 @@ const Footer = (): JSX.Element => {
               </ul>
             </div>
 
-            {/* Resources column - adjusted for better alignment */}
+            {/* Resources column */}
             <div className="flex flex-col space-y-4 md:items-start">
               <div className="space-y-2">
-                <h3 className="font-bold text-gray-800 text-xl">Resources</h3>
+                <h3
+                  className={`font-bold text-xl ${
+                    isDarkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  Resources
+                </h3>
                 <UnderlineDecoration />
               </div>
               <ul className="space-y-3">
@@ -123,7 +191,11 @@ const Footer = (): JSX.Element => {
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                      className={`transition-colors ${
+                        isDarkMode
+                          ? "text-gray-300 hover:text-blue-400"
+                          : "text-gray-600 hover:text-blue-600"
+                      }`}
                     >
                       {link.title}
                     </Link>
@@ -132,10 +204,16 @@ const Footer = (): JSX.Element => {
               </ul>
             </div>
 
-            {/* Company column - adjusted for better alignment */}
+            {/* Company column */}
             <div className="flex flex-col space-y-4 md:items-start">
               <div className="space-y-2">
-                <h3 className="font-bold text-gray-800 text-xl">Company</h3>
+                <h3
+                  className={`font-bold text-xl ${
+                    isDarkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  Company
+                </h3>
                 <UnderlineDecoration />
               </div>
               <ul className="space-y-3">
@@ -143,7 +221,11 @@ const Footer = (): JSX.Element => {
                   <li key={index}>
                     <Link
                       href={link.href}
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                      className={`transition-colors ${
+                        isDarkMode
+                          ? "text-gray-300 hover:text-blue-400"
+                          : "text-gray-600 hover:text-blue-600"
+                      }`}
                     >
                       {link.title}
                     </Link>
@@ -152,10 +234,16 @@ const Footer = (): JSX.Element => {
               </ul>
             </div>
 
-            {/* Follow Us column - adjusted for better alignment */}
+            {/* Follow Us column */}
             <div className="flex flex-col space-y-4 md:items-start">
               <div className="space-y-2">
-                <h3 className="font-bold text-gray-800 text-xl">Connect</h3>
+                <h3
+                  className={`font-bold text-xl ${
+                    isDarkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  Connect
+                </h3>
                 <UnderlineDecoration />
               </div>
               <ul className="space-y-3">
@@ -163,11 +251,21 @@ const Footer = (): JSX.Element => {
                   <li key={index}>
                     <a
                       href={link.href}
-                      className="text-gray-600 flex items-center gap-2 hover:text-blue-600 hover:underline transition-colors"
+                      className={`flex items-center gap-2 hover:underline transition-colors ${
+                        isDarkMode
+                          ? "text-gray-300 hover:text-blue-400"
+                          : "text-gray-600 hover:text-blue-600"
+                      }`}
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      <span className="text-blue-600">{link.icon}</span>
+                      <span
+                        className={
+                          isDarkMode ? "text-blue-400" : "text-blue-600"
+                        }
+                      >
+                        {link.icon}
+                      </span>
                       {link.title}
                     </a>
                   </li>
@@ -178,7 +276,11 @@ const Footer = (): JSX.Element => {
         </div>
 
         {/* Bottom decorative border */}
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-30"></div>
+        <div
+          className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent to-transparent opacity-30 ${
+            isDarkMode ? "via-blue-400" : "via-blue-500"
+          }`}
+        ></div>
       </footer>
     </>
   );

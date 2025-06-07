@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { ThemeContext } from "@/context/themeContext";
 import { Badge } from "@/components/ui/badge";
 import {
   CalendarIcon,
@@ -10,7 +11,7 @@ import {
   UserIcon,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image"; // Thêm import này
+import Image from "next/image";
 
 interface FeaturedArticleProps {
   article: {
@@ -27,6 +28,8 @@ interface FeaturedArticleProps {
 
 export const FeaturedArticle = ({ article }: FeaturedArticleProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   // Auto-rotate images every 5 seconds
   useEffect(() => {
@@ -64,7 +67,11 @@ export const FeaturedArticle = ({ article }: FeaturedArticleProps) => {
       : "";
 
   return (
-    <Card className="border-0 rounded-none">
+    <Card
+      className={`border-0 rounded-none ${
+        isDarkMode ? "bg-gray-900" : "bg-white"
+      }`}
+    >
       <CardContent className="p-0">
         <div className="relative w-full h-[428px]">
           {/* Sử dụng ảnh đơn với object-fit thay vì carousel khi chỉ có 1 ảnh */}
@@ -74,8 +81,18 @@ export const FeaturedArticle = ({ article }: FeaturedArticleProps) => {
               style={{ backgroundImage: `url(${currentImage})` }}
             >
               {article.hasPlayButton && (
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50px] h-[50px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 hover:scale-110 transition-all duration-300 cursor-pointer">
-                  <PlayIcon className="w-4 h-[18px] text-[#22408a] group-hover:scale-110 transition-transform duration-300" />
+                <div
+                  className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50px] h-[50px] rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 cursor-pointer ${
+                    isDarkMode
+                      ? "bg-gray-800 hover:bg-gray-700"
+                      : "bg-white hover:bg-gray-50"
+                  }`}
+                >
+                  <PlayIcon
+                    className={`w-4 h-[18px] group-hover:scale-110 transition-transform duration-300 ${
+                      isDarkMode ? "text-blue-400" : "text-[#22408a]"
+                    }`}
+                  />
                 </div>
               )}
             </div>
@@ -93,25 +110,51 @@ export const FeaturedArticle = ({ article }: FeaturedArticleProps) => {
               />
 
               {article.hasPlayButton && (
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50px] h-[50px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 hover:scale-110 transition-all duration-300 cursor-pointer">
-                  <PlayIcon className="w-4 h-[18px] text-[#22408a] group-hover:scale-110 transition-transform duration-300" />
+                <div
+                  className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50px] h-[50px] rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 cursor-pointer ${
+                    isDarkMode
+                      ? "bg-gray-800 hover:bg-gray-700"
+                      : "bg-white hover:bg-gray-50"
+                  }`}
+                >
+                  <PlayIcon
+                    className={`w-4 h-[18px] group-hover:scale-110 transition-transform duration-300 ${
+                      isDarkMode ? "text-blue-400" : "text-[#22408a]"
+                    }`}
+                  />
                 </div>
               )}
 
               {/* Navigation buttons */}
               <button
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 w-10 h-10 rounded-full flex items-center justify-center hover:bg-white z-10"
+                className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center z-10 transition-colors duration-200 ${
+                  isDarkMode
+                    ? "bg-gray-800/80 hover:bg-gray-700"
+                    : "bg-white/80 hover:bg-white"
+                }`}
                 onClick={goToPrevImage}
                 aria-label="Previous image"
               >
-                <ChevronLeftIcon className="w-6 h-6 text-[#183354]" />
+                <ChevronLeftIcon
+                  className={`w-6 h-6 ${
+                    isDarkMode ? "text-blue-400" : "text-[#183354]"
+                  }`}
+                />
               </button>
               <button
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 w-10 h-10 rounded-full flex items-center justify-center hover:bg-white z-10"
+                className={`absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center z-10 transition-colors duration-200 ${
+                  isDarkMode
+                    ? "bg-gray-800/80 hover:bg-gray-700"
+                    : "bg-white/80 hover:bg-white"
+                }`}
                 onClick={goToNextImage}
                 aria-label="Next image"
               >
-                <ChevronRightIcon className="w-6 h-6 text-[#183354]" />
+                <ChevronRightIcon
+                  className={`w-6 h-6 ${
+                    isDarkMode ? "text-blue-400" : "text-[#183354]"
+                  }`}
+                />
               </button>
 
               {/* Navigation dots */}
@@ -120,7 +163,13 @@ export const FeaturedArticle = ({ article }: FeaturedArticleProps) => {
                   <button
                     key={index}
                     className={`w-2 h-2 rounded-full ${
-                      index === currentImageIndex ? "bg-white" : "bg-white/50"
+                      index === currentImageIndex
+                        ? isDarkMode
+                          ? "bg-blue-400"
+                          : "bg-white"
+                        : isDarkMode
+                        ? "bg-blue-400/50"
+                        : "bg-white/50"
                     }`}
                     onClick={() => setCurrentImageIndex(index)}
                     aria-label={`Go to image ${index + 1}`}
@@ -132,43 +181,101 @@ export const FeaturedArticle = ({ article }: FeaturedArticleProps) => {
         </div>
 
         <div className="flex flex-col items-center mt-8 px-4 md:px-8">
-          <h2 className="text-[28px] font-extrabold text-[#183354] text-center leading-tight mb-5 hover:text-[#22408a] hover:underline transition-colors cursor-pointer">
+          <h2
+            className={`text-[28px] font-extrabold text-center leading-tight mb-5 hover:underline transition-colors cursor-pointer ${
+              isDarkMode
+                ? "text-white hover:text-blue-400"
+                : "text-[#183354] hover:text-[#22408a]"
+            }`}
+          >
             {article.title}
           </h2>
-          <Badge className="rounded-sm text-[#22408a] bg-[#f0f3f8] border-none mb-4 px-4 py-1.5 font-medium uppercase text-xs tracking-wider hover:bg-[#e0e5f0] cursor-pointer transition-colors hover:text-[#183354]">
+          <Badge
+            className={`rounded-sm border-none mb-4 px-4 py-1.5 font-medium uppercase text-xs tracking-wider cursor-pointer transition-colors ${
+              isDarkMode
+                ? "text-blue-400 bg-gray-700 hover:bg-gray-600 hover:text-blue-300"
+                : "text-[#22408a] bg-[#f0f3f8] hover:bg-[#e0e5f0] hover:text-[#183354]"
+            }`}
+          >
             {article.category}
           </Badge>
           <div className="flex flex-wrap items-center justify-center gap-10 mb-6">
             <div className="flex items-center gap-2 group">
-              <UserIcon className="w-[17px] h-4 text-[#6d757f] group-hover:text-[#22408a] transition-colors" />
-              <span className="text-[13px] text-[#6d757f] tracking-[0.52px] text-center font-medium">
+              <UserIcon
+                className={`w-[17px] h-4 group-hover:text-blue-400 transition-colors ${
+                  isDarkMode
+                    ? "text-gray-400"
+                    : "text-[#6d757f] group-hover:text-[#22408a]"
+                }`}
+              />
+              <span
+                className={`text-[13px] tracking-[0.52px] text-center font-medium ${
+                  isDarkMode ? "text-gray-400" : "text-[#6d757f]"
+                }`}
+              >
                 BY
               </span>
-              <span className="text-[13px] text-[#6d757f] tracking-[0.52px] text-center hover:text-[#22408a] hover:underline transition-colors cursor-pointer">
+              <span
+                className={`text-[13px] tracking-[0.52px] text-center hover:underline transition-colors cursor-pointer ${
+                  isDarkMode
+                    ? "text-gray-400 hover:text-blue-400"
+                    : "text-[#6d757f] hover:text-[#22408a]"
+                }`}
+              >
                 {article.author}
               </span>
             </div>
 
             <div className="flex items-center gap-2 group">
-              <CalendarIcon className="w-[17px] h-4 text-[#6d757f] group-hover:text-[#22408a] transition-colors" />
-              <span className="text-[13px] text-[#6d757f] tracking-[0.52px] text-center">
+              <CalendarIcon
+                className={`w-[17px] h-4 transition-colors ${
+                  isDarkMode
+                    ? "text-gray-400 group-hover:text-blue-400"
+                    : "text-[#6d757f] group-hover:text-[#22408a]"
+                }`}
+              />
+              <span
+                className={`text-[13px] tracking-[0.52px] text-center ${
+                  isDarkMode ? "text-gray-400" : "text-[#6d757f]"
+                }`}
+              >
                 {article.date}
               </span>
             </div>
 
             <div className="flex items-center gap-2 group">
-              <ClockIcon className="w-[17px] h-4 text-[#6d757f] group-hover:text-[#22408a] transition-colors" />
-              <span className="text-[13px] text-[#6d757f] tracking-[0.52px] text-center">
+              <ClockIcon
+                className={`w-[17px] h-4 transition-colors ${
+                  isDarkMode
+                    ? "text-gray-400 group-hover:text-blue-400"
+                    : "text-[#6d757f] group-hover:text-[#22408a]"
+                }`}
+              />
+              <span
+                className={`text-[13px] tracking-[0.52px] text-center ${
+                  isDarkMode ? "text-gray-400" : "text-[#6d757f]"
+                }`}
+              >
                 {article.readTime}
               </span>
             </div>
           </div>
 
-          <p className="text-[#545e69] text-base text-center leading-7 max-w-3xl mx-auto mb-2 hover:text-[#383f48] transition-colors">
+          <p
+            className={`text-base text-center leading-7 max-w-3xl mx-auto mb-2 transition-colors ${
+              isDarkMode
+                ? "text-gray-300 hover:text-gray-200"
+                : "text-[#545e69] hover:text-[#383f48]"
+            }`}
+          >
             {article.description}
           </p>
 
-          <div className="w-16 h-1 bg-[#22408a] mt-6 mb-4 rounded-full"></div>
+          <div
+            className={`w-16 h-1 mt-6 mb-4 rounded-full ${
+              isDarkMode ? "bg-blue-400" : "bg-[#22408a]"
+            }`}
+          ></div>
         </div>
       </CardContent>
     </Card>

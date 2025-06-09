@@ -8,12 +8,13 @@ import {
   BarChartIcon,
   XIcon,
 } from "lucide-react";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useSidebar } from "@/context/sidebarContext";
+import { ThemeContext } from "@/context/themeContext";
 
 export const SideMenuByAnima = (): JSX.Element => {
   const { user, logout } = useAuth();
@@ -21,6 +22,9 @@ export const SideMenuByAnima = (): JSX.Element => {
   const pathname = usePathname();
   const { isCollapsed, toggleSidebar } = useSidebar();
   const [topOffset, setTopOffset] = useState(0);
+
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   // Lấy chiều cao của header để đặt top cho sidebar
   useEffect(() => {
@@ -83,7 +87,11 @@ export const SideMenuByAnima = (): JSX.Element => {
     <aside
       className={`${
         isCollapsed ? "w-[80px]" : "w-[250px]"
-      } fixed left-0 bg-white shadow-[0px_10px_60px_#e1ecf880] transition-all duration-300 z-40 overflow-y-auto`}
+      } fixed left-0 transition-all duration-300 z-40 overflow-y-auto ${
+        isDarkMode
+          ? "bg-gray-800 shadow-[0px_10px_60px_rgba(0,0,0,0.3)]"
+          : "bg-white shadow-[0px_10px_60px_#e1ecf880]"
+      }`}
       style={{
         top: `${topOffset}px`,
         bottom: 0,
@@ -99,9 +107,17 @@ export const SideMenuByAnima = (): JSX.Element => {
         >
           {!isCollapsed && (
             <div className="flex items-center">
-              <BookIcon className="w-6 h-6 text-blue-600" />
+              <BookIcon
+                className={`w-6 h-6 ${
+                  isDarkMode ? "text-blue-400" : "text-blue-600"
+                }`}
+              />
               <div className="ml-2.5">
-                <h1 className="font-['Inter',sans-serif] font-semibold text-lg text-blue-600 tracking-tight">
+                <h1
+                  className={`font-['Inter',sans-serif] font-semibold text-lg tracking-tight ${
+                    isDarkMode ? "text-blue-400" : "text-blue-600"
+                  }`}
+                >
                   Author Panel
                 </h1>
               </div>
@@ -111,8 +127,10 @@ export const SideMenuByAnima = (): JSX.Element => {
           <Button
             variant="ghost"
             size="sm"
-            className={`p-1 hover:bg-gray-100 rounded-full ${
-              isCollapsed ? "mx-auto" : ""
+            className={`p-1 rounded-full ${isCollapsed ? "mx-auto" : ""} ${
+              isDarkMode
+                ? "hover:bg-gray-700 text-gray-300"
+                : "hover:bg-gray-100 text-gray-700"
             }`}
             onClick={toggleSidebar}
           >
@@ -133,7 +151,11 @@ export const SideMenuByAnima = (): JSX.Element => {
                   href={item.href}
                   className={`flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 ${
                     item.isActive
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      ? isDarkMode
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                      : isDarkMode
+                      ? "text-gray-300 hover:bg-gray-700 hover:text-blue-400"
                       : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                   } ${isCollapsed ? "justify-center" : ""}`}
                 >
@@ -150,6 +172,56 @@ export const SideMenuByAnima = (): JSX.Element => {
             ))}
           </ul>
         </nav>
+
+        {/* User section at bottom */}
+        {user && (
+          <div
+            className={`mt-auto pt-4 border-t ${
+              isDarkMode ? "border-gray-700" : "border-gray-200"
+            }`}
+          >
+            <div
+              className={`flex items-center ${
+                isCollapsed ? "justify-center" : "justify-between"
+              }`}
+            >
+              {!isCollapsed && (
+                <div className="flex items-center">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${
+                      isDarkMode
+                        ? "bg-blue-600 text-white"
+                        : "bg-blue-100 text-blue-600"
+                    }`}
+                  >
+                    {user.username?.charAt(0).toUpperCase() || "U"}
+                  </div>
+                  <div className="ml-2">
+                    <p
+                      className={`text-sm font-medium ${
+                        isDarkMode ? "text-gray-200" : "text-gray-900"
+                      }`}
+                    >
+                      {user.username}
+                    </p>
+                  </div>
+                </div>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className={`p-1 rounded ${
+                  isDarkMode
+                    ? "hover:bg-gray-700 text-gray-400"
+                    : "hover:bg-gray-100 text-gray-600"
+                }`}
+              >
+                <SettingsIcon className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   );

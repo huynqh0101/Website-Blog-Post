@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { Article, ArticleResponse } from "@/types/articleAdmin";
 import { ArticleCard } from "@/components/dashboard/components/ArticleCard";
 import CategoryFilter from "@/components/news/CategoryFilter";
 import { useAuth } from "@/context/authContext";
+import { ThemeContext } from "@/context/themeContext";
 import { toast } from "sonner";
 
 export default function MyArticlesPage() {
   const { user } = useAuth();
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,9 +89,21 @@ export default function MyArticlesPage() {
 
   if (!user) {
     return (
-      <div className="lg:ml-[200px] p-8">
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="text-center py-8 text-gray-500">
+      <div
+        className={`lg:ml-[200px] p-8 min-h-screen ${
+          isDarkMode ? "bg-gray-900" : "bg-gray-50"
+        }`}
+      >
+        <div
+          className={`p-6 rounded-xl shadow-sm ${
+            isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-white"
+          }`}
+        >
+          <div
+            className={`text-center py-8 ${
+              isDarkMode ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
             Please login to view your articles.
           </div>
         </div>
@@ -96,21 +112,51 @@ export default function MyArticlesPage() {
   }
 
   return (
-    <div className="lg:ml-[200px] p-8">
-      <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div
+      className={`lg:ml-[200px] p-8 min-h-screen ${
+        isDarkMode ? "bg-gray-900" : "bg-gray-50"
+      }`}
+    >
+      <div
+        className={`p-6 rounded-xl shadow-sm ${
+          isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-white"
+        }`}
+      >
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 mt-8">
-          <h1 className="text-2xl font-bold mb-4 md:mb-0">My Articles</h1>
+          <h1
+            className={`text-2xl font-bold mb-4 md:mb-0 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            My Articles
+          </h1>
           <CategoryFilter onCategoryChange={handleCategoryChange} />
         </div>
 
         {isLoading ? (
           <div className="flex justify-center p-6">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+            <div
+              className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${
+                isDarkMode ? "border-blue-400" : "border-blue-500"
+              }`}
+            ></div>
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
+          <div
+            className={`p-4 rounded-lg ${
+              isDarkMode
+                ? "bg-red-900/50 text-red-300 border border-red-800"
+                : "bg-red-50 text-red-600"
+            }`}
+          >
+            {error}
+          </div>
         ) : articles.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div
+            className={`text-center py-8 ${
+              isDarkMode ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
             {selectedCategory
               ? `No articles found in the "${selectedCategory}" category.`
               : "No articles found. Start writing your first article!"}
@@ -137,9 +183,13 @@ export default function MyArticlesPage() {
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded ${
+                    className={`px-3 py-1 rounded transition-colors ${
                       currentPage === 1
-                        ? "bg-gray-100 text-gray-400"
+                        ? isDarkMode
+                          ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : isDarkMode
+                        ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >
@@ -151,9 +201,11 @@ export default function MyArticlesPage() {
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1 rounded ${
+                        className={`px-3 py-1 rounded transition-colors ${
                           currentPage === page
                             ? "bg-blue-500 text-white"
+                            : isDarkMode
+                            ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
                             : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                         }`}
                       >
@@ -167,9 +219,13 @@ export default function MyArticlesPage() {
                       setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 rounded ${
+                    className={`px-3 py-1 rounded transition-colors ${
                       currentPage === totalPages
-                        ? "bg-gray-100 text-gray-400"
+                        ? isDarkMode
+                          ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : isDarkMode
+                        ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >

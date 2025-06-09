@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useContext } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useArticleForm } from "@/hooks/UseArticleFormProps";
@@ -18,11 +18,15 @@ import ArticleMetadata from "@/components/articles/components/ArticleMetadata";
 import ArticleBlocks from "@/components/articles/components/ArticleBlocks";
 import { useArticleContext } from "@/context/articleContext";
 import { fetchFileById, getImageUrl } from "@/services/api";
+import { ThemeContext } from "@/context/themeContext";
 
 export default function EditArticlePage() {
   const params = useParams();
   const articleId = params.id as string;
   const { setArticleId, setIsEditMode } = useArticleContext();
+
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   // Use useEffect for context updates with cleanup
   useEffect(() => {
@@ -274,21 +278,51 @@ export default function EditArticlePage() {
   // Improved loading state
   if (isFetching) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-50">
-        <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mb-4"></div>
-          <div className="text-xl font-medium">Loading article data...</div>
+      <div
+        className={`flex items-center justify-center min-h-screen ${
+          isDarkMode
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-50"
+        }`}
+      >
+        <div
+          className={`p-6 rounded-lg shadow-md flex flex-col items-center ${
+            isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-white"
+          }`}
+        >
+          <div
+            className={`animate-spin rounded-full h-10 w-10 border-b-2 mb-4 ${
+              isDarkMode ? "border-blue-400" : "border-blue-500"
+            }`}
+          ></div>
+          <div
+            className={`text-xl font-medium ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            Loading article data...
+          </div>
         </div>
       </div>
     );
   }
 
-  // Return optimized render
+  // Return optimized render with dark mode
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-50 text-slate-800 py-10 px-4 md:px-8">
+    <div
+      className={`min-h-screen py-10 px-4 md:px-8 ${
+        isDarkMode
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
+          : "bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-50 text-slate-800"
+      }`}
+    >
       <form
         onSubmit={handleSubmit}
-        className="max-w-6xl mx-auto space-y-10 bg-white/90 p-6 md:p-8 rounded-xl shadow-lg backdrop-blur-sm border border-blue-100"
+        className={`max-w-6xl mx-auto space-y-10 p-6 md:p-8 rounded-xl shadow-lg backdrop-blur-sm border ${
+          isDarkMode
+            ? "bg-gray-800/90 border-gray-700"
+            : "bg-white/90 border-blue-100"
+        }`}
       >
         <ArticleHeader
           isSubmitting={isSubmitting}
@@ -298,7 +332,11 @@ export default function EditArticlePage() {
         />
 
         {/* Basic info section */}
-        <div className="border-b border-blue-100 pb-8">
+        <div
+          className={`border-b pb-8 ${
+            isDarkMode ? "border-gray-700" : "border-blue-100"
+          }`}
+        >
           <ArticleBasicInfo
             title={title}
             setTitle={setTitle}
@@ -308,7 +346,11 @@ export default function EditArticlePage() {
         </div>
 
         {/* Slug and Cover Image */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-blue-100 pb-8">
+        <div
+          className={`grid grid-cols-1 md:grid-cols-2 gap-6 border-b pb-8 ${
+            isDarkMode ? "border-gray-700" : "border-blue-100"
+          }`}
+        >
           <ArticleBasicInfo.Slug slug={slug} setSlug={setSlug} title={title} />
 
           <ArticleCoverImage
@@ -325,7 +367,11 @@ export default function EditArticlePage() {
         </div>
 
         {/* Author and Category */}
-        <div className="border-b border-blue-100 pb-8">
+        <div
+          className={`border-b pb-8 ${
+            isDarkMode ? "border-gray-700" : "border-blue-100"
+          }`}
+        >
           <ArticleMetadata
             type={type}
             setType={setType}

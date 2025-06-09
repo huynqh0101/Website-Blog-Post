@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Article } from "@/types/articleAdmin";
 import { toast } from "sonner";
-import { useState } from "react";
-import { useAuth } from "@/context/authContext"; // Import useAuth hook
+import { useState, useContext } from "react";
+import { useAuth } from "@/context/authContext";
+import { ThemeContext } from "@/context/themeContext";
 
 interface ArticleCardProps {
   article: Article;
@@ -21,7 +22,9 @@ export const ArticleCard = ({
 }: ArticleCardProps) => {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
-  const { user } = useAuth(); // Lấy thông tin user từ context
+  const { user } = useAuth();
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -71,7 +74,13 @@ export const ArticleCard = ({
   };
 
   return (
-    <div className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow relative">
+    <div
+      className={`border rounded-lg overflow-hidden hover:shadow-md transition-shadow relative ${
+        isDarkMode
+          ? "bg-gray-800 border-gray-700 hover:shadow-gray-900/20"
+          : "bg-white border-gray-200"
+      }`}
+    >
       <Link href={`/dashboard/article/${article.documentId}`} className="block">
         <div className="relative h-40 w-full">
           <Image
@@ -87,14 +96,26 @@ export const ArticleCard = ({
           )}
         </div>
         <div className="p-4">
-          <h3 className="font-medium text-base line-clamp-2">
+          <h3
+            className={`font-medium text-base line-clamp-2 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
             {article.title}
           </h3>
-          <p className="text-gray-500 text-sm mt-1 line-clamp-2">
+          <p
+            className={`text-sm mt-1 line-clamp-2 ${
+              isDarkMode ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
             {article.description}
           </p>
           <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-gray-500">
+            <span
+              className={`text-xs ${
+                isDarkMode ? "text-gray-500" : "text-gray-500"
+              }`}
+            >
               {article.publishedAt
                 ? `Published: ${formatDate(article.publishedAt)}`
                 : `Created: ${formatDate(article.createdAt)}`}
@@ -108,7 +129,11 @@ export const ArticleCard = ({
                   e.preventDefault();
                   router.push(`/dashboard/edit-article/${article.documentId}`);
                 }}
-                className="p-1 bg-gray-100 rounded-full hover:bg-gray-200 transition-all"
+                className={`p-1 rounded-full transition-all ${
+                  isDarkMode
+                    ? "bg-gray-700 hover:bg-gray-600"
+                    : "bg-gray-100 hover:bg-gray-200"
+                }`}
                 title="Edit article"
               >
                 <svg
@@ -132,7 +157,11 @@ export const ArticleCard = ({
                 disabled={isDeleting}
                 className={`p-1 rounded-full transition-all ${
                   isDeleting
-                    ? "bg-gray-200 cursor-not-allowed"
+                    ? isDarkMode
+                      ? "bg-gray-800 cursor-not-allowed"
+                      : "bg-gray-200 cursor-not-allowed"
+                    : isDarkMode
+                    ? "bg-gray-700 hover:bg-gray-600"
                     : "bg-gray-100 hover:bg-gray-200"
                 }`}
                 title="Delete article"
@@ -147,7 +176,13 @@ export const ArticleCard = ({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className={`${isDeleting ? "text-gray-400" : "text-red-600"}`}
+                  className={`${
+                    isDeleting
+                      ? isDarkMode
+                        ? "text-gray-600"
+                        : "text-gray-400"
+                      : "text-red-600"
+                  }`}
                 >
                   <path d="M3 6h18"></path>
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>

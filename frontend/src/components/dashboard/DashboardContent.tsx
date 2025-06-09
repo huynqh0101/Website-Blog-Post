@@ -1,15 +1,19 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { Article, ArticleResponse } from "@/types/articleAdmin";
 import { ArticleStats } from "./components/ArticleStats";
 import { QuickActions } from "./components/QuickActions";
 import { AuthorProfile } from "./components/AuthorProfile";
 import { RecentArticles } from "./components/RecentArticles";
 import { useAuth } from "@/context/authContext";
+import { ThemeContext } from "@/context/themeContext";
 
 export const DashboardContent = () => {
   const { user } = useAuth();
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +89,13 @@ export const DashboardContent = () => {
   if (error && !user) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="bg-amber-50 text-amber-800 p-4 rounded-lg shadow">
+        <div
+          className={`p-4 rounded-lg shadow ${
+            isDarkMode
+              ? "bg-amber-900/50 text-amber-300 border border-amber-800"
+              : "bg-amber-50 text-amber-800"
+          }`}
+        >
           {error}. Please login to view your dashboard.
         </div>
       </div>

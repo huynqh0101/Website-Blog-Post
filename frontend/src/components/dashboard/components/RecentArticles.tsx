@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+"use client";
+import { useState, useEffect, useContext } from "react";
 import { Article } from "@/types/articleAdmin";
 import { ArticleCard } from "./ArticleCard";
 import Link from "next/link";
+import { ThemeContext } from "@/context/themeContext";
 
 interface RecentArticlesProps {
   articles: Article[];
@@ -17,6 +19,8 @@ export const RecentArticles = ({
   formatDate,
 }: RecentArticlesProps) => {
   const [articles, setArticles] = useState<Article[]>(initialArticles);
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   useEffect(() => {
     setArticles(initialArticles);
@@ -27,12 +31,26 @@ export const RecentArticles = ({
   };
 
   return (
-    <div className="lg:col-span-3 bg-white p-6 rounded-xl shadow-sm">
+    <div
+      className={`lg:col-span-3 p-6 rounded-xl shadow-sm ${
+        isDarkMode ? "bg-gray-800 shadow-gray-900/20" : "bg-white"
+      }`}
+    >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-medium">Recent Articles</h2>
+        <h2
+          className={`text-lg font-medium ${
+            isDarkMode ? "text-white" : "text-gray-900"
+          }`}
+        >
+          Recent Articles
+        </h2>
         <Link
           href="/dashboard/my-articles"
-          className="text-sm text-blue-600 hover:text-indigo-500 hover:underline"
+          className={`text-sm hover:underline transition-colors ${
+            isDarkMode
+              ? "text-blue-400 hover:text-blue-300"
+              : "text-blue-600 hover:text-indigo-500"
+          }`}
         >
           View all
         </Link>
@@ -40,12 +58,28 @@ export const RecentArticles = ({
 
       {isLoading ? (
         <div className="flex justify-center p-6">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+          <div
+            className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${
+              isDarkMode ? "border-blue-400" : "border-blue-500"
+            }`}
+          ></div>
         </div>
       ) : error ? (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
+        <div
+          className={`p-4 rounded-lg ${
+            isDarkMode
+              ? "bg-red-900/50 text-red-300 border border-red-800"
+              : "bg-red-50 text-red-600"
+          }`}
+        >
+          {error}
+        </div>
       ) : articles.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div
+          className={`text-center py-8 ${
+            isDarkMode ? "text-gray-400" : "text-gray-500"
+          }`}
+        >
           No articles found. Start writing your first article!
         </div>
       ) : (

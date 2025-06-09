@@ -1,17 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Edit } from "lucide-react";
 import ArticleDetail from "@/components/articles/ArticleDetail";
 import { StrapiArticle } from "@/types/strapi-response";
 import { articleService } from "@/services/articleService";
+import { ThemeContext } from "@/context/themeContext";
 
 export default function ArticlePage() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
+
+  const themeContext = useContext(ThemeContext);
+  const { isDarkMode } = themeContext || { isDarkMode: false };
 
   const [article, setArticle] = useState<StrapiArticle | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,17 +62,29 @@ export default function ArticlePage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3a5b22]"></div>
+      <div
+        className={`flex justify-center items-center min-h-screen ${
+          isDarkMode ? "bg-gray-900" : "bg-white"
+        }`}
+      >
+        <div
+          className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
+            isDarkMode ? "border-blue-400" : "border-[#3a5b22]"
+          }`}
+        ></div>
       </div>
     );
   }
 
   if (error || !article) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-red-500">Article not found</h1>
-        <p className="mt-4 text-gray-600">
+      <div
+        className={`container mx-auto px-4 py-8 ${
+          isDarkMode ? "bg-gray-900" : "bg-white"
+        }`}
+      >
+        <h1 className={`text-2xl font-bold text-red-500`}>Article not found</h1>
+        <p className={`mt-4 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
           The requested article could not be found.
         </p>
         <Button onClick={handleBack} className="mt-4" variant="outline">
@@ -80,13 +96,17 @@ export default function ArticlePage() {
   }
 
   return (
-    <div className="relative">
+    <div className={`relative ${isDarkMode ? "bg-gray-900" : "bg-white"}`}>
       {/* Dashboard controls as buttons without wrapper div */}
       <>
         <Button
           variant="ghost"
           onClick={handleBack}
-          className="fixed top-[75px] left-[85px] z-50 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md transition-colors duration-200"
+          className={`fixed top-[75px] left-[85px] z-50 flex items-center gap-2 px-4 py-2 rounded-md transition-colors duration-200 ${
+            isDarkMode
+              ? "bg-gray-800 hover:bg-gray-700 text-gray-200"
+              : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+          }`}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Dashboard</span>

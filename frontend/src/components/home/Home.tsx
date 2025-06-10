@@ -2,18 +2,18 @@
 import { useContext } from "react";
 import { ThemeContext } from "@/context/themeContext";
 import newsData from "@/constants/newsData";
-import { NewsletterSection } from "../home/newsletter/NewsletterSection";
-import { EditorsPicksSection } from "../home/sections/EditorsPicksSection";
-import { Advertisement } from "../home/advertisements/Advertisement";
-import { PoliticsSection } from "../home/sections/PoliticsSection";
-import { SportsSection } from "../home/sections/SportsSection";
-import { TodaysHotSpotSection } from "../home/sections/TodaysHotSpotSection";
-import { WorldTopNewsSection } from "../home/sections/WorldTopNewsSection";
-import { BusinessSidebar } from "../home/sidebars/BusinessSidebar";
-import { MainSidebar } from "../home/sidebars/MainSidebar";
-import { ArticleCard } from "../home/ArticleCard";
-import { FeaturedArticle } from "../home/FeaturedArticle";
-import BannerSlider from "../home/BannerSlider";
+import { NewsletterSection } from "./NewsletterSection";
+import { EditorsPicksSection } from "./sections/EditorsPicksSection";
+import { Advertisement } from "./Advertisement";
+import { PoliticsSection } from "./sections/PoliticsSection";
+import { SportsSection } from "./sections/SportsSection";
+import { TodaysHotSpotSection } from "./sections/TodaysHotSpotSection";
+import { WorldTopNewsSection } from "./sections/WorldTopNewsSection";
+import { BusinessSidebar } from "./sidebars/BusinessSidebar";
+import { MainSidebar } from "./sidebars/MainSidebar";
+import { ArticleCard } from "./ArticleCard";
+import { FeaturedArticle } from "./FeaturedArticle";
+import BannerSlider from "./BannerSlider";
 
 const {
   businessArticle,

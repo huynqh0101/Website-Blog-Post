@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useCallback, useContext } from "react";
 import { Article, ArticleResponse } from "@/types/articleAdmin";
-import { ArticleStats } from "./components/ArticleStats";
-import { QuickActions } from "./components/QuickActions";
-import { AuthorProfile } from "./components/AuthorProfile";
-import { RecentArticles } from "./components/RecentArticles";
+import { ArticleStats } from "./ArticleStats";
+import { QuickActions } from "./QuickActions";
+import { AuthorProfile } from "./AuthorProfile";
+import { RecentArticles } from "./RecentArticles";
 import { useAuth } from "@/context/authContext";
 import { ThemeContext } from "@/context/themeContext";
 

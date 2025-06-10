@@ -1,7 +1,7 @@
 "use client";
 import { useContext } from "react";
 import { ThemeContext } from "@/context/themeContext";
-import { Advertisement } from "../advertisements/Advertisement";
+import { Advertisement } from "../Advertisement";
 import { TopRankedSection } from "../sections/TopRankedSection";
 import { TopStoriesSection } from "../sections/TopStoriesSection";
 

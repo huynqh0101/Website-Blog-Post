@@ -1,7 +1,7 @@
 "use client";
 import { useContext } from "react";
 import { ThemeContext } from "@/context/themeContext";
-import { MainByAnima } from "@/components/layout/Home";
+import { MainByAnima } from "@/components/home/Home";
 import FloatingActionButtons from "@/components/ui/FloatingActionButtons";
 
 export default function Home() {

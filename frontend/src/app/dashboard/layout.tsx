@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext } from "react";
-import { SideMenuByAnima } from "@/components/layout/SideMenu";
+import { SideMenuByAnima } from "@/components/dashboard/SideMenu";
 import { SidebarProvider } from "@/context/sidebarContext";
 import { ArticleProvider } from "@/context/articleContext";
 import { ThemeContext } from "@/context/themeContext";

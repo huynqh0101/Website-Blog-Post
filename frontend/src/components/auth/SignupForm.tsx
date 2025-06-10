@@ -22,16 +22,16 @@ export default function SignupForm() {
   } = useSignup();
 
   return (
-    <div className="bg-white flex flex-row justify-center w-full min-h-screen">
-      <div className="bg-white w-full max-w-[1000px] relative flex shadow-lg rounded-lg overflow-hidden my-8">
+    <div className="bg-white dark:bg-gray-900 flex flex-row justify-center w-full min-h-screen">
+      <div className="bg-white dark:bg-gray-800 w-full max-w-[1000px] relative flex shadow-lg rounded-lg overflow-hidden my-8">
         <div className="flex-1 py-8 px-6 flex justify-center items-center">
-          <Card className="border-none shadow-none w-full max-w-[350px]">
+          <Card className="border-none shadow-none w-full max-w-[350px] bg-transparent">
             <CardContent className="p-0">
               <div className="mb-8">
-                <h1 className="text-3xl font-semibold font-serif text-gray-900 tracking-tight">
+                <h1 className="text-3xl font-semibold font-serif text-gray-900 dark:text-white tracking-tight">
                   Get Started Now
                 </h1>
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                   Create your account and start your journey
                 </p>
               </div>
@@ -39,19 +39,19 @@ export default function SignupForm() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Username field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-serif text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700 dark:text-gray-200">
                     Name
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="h-4 w-4 text-gray-400" />
+                      <User className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                     </div>
                     <Input
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
                       placeholder="Enter your name"
-                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 dark:border-gray-600 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                       required
                     />
                   </div>
@@ -59,12 +59,12 @@ export default function SignupForm() {
 
                 {/* Email field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-serif text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700 dark:text-gray-200">
                     Email address
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-4 w-4 text-gray-400" />
+                      <Mail className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                     </div>
                     <Input
                       type="email"
@@ -72,7 +72,7 @@ export default function SignupForm() {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Enter your email"
-                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 dark:border-gray-600 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                       required
                     />
                   </div>
@@ -80,12 +80,12 @@ export default function SignupForm() {
 
                 {/* Password field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-serif text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700 dark:text-gray-200">
                     Password
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-4 w-4 text-gray-400" />
+                      <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                     </div>
                     <Input
                       type={showPassword ? "text" : "password"}
@@ -93,13 +93,13 @@ export default function SignupForm() {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Enter your password"
-                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 pr-10"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 dark:border-gray-600 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -111,14 +111,13 @@ export default function SignupForm() {
                 </div>
 
                 {/* Confirm password field */}
-                {/* Confirm password field */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold font-serif text-gray-700">
+                  <label className="text-sm font-semibold font-serif text-gray-700 dark:text-gray-200">
                     Confirm Password
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-4 w-4 text-gray-400" />
+                      <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                     </div>
                     <Input
                       type={showConfirmPassword ? "text" : "password"}
@@ -126,7 +125,7 @@ export default function SignupForm() {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Confirm your password"
-                      className="h-10 text-sm font-serif rounded-lg border-gray-200 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 pr-10"
+                      className="h-10 text-sm font-serif rounded-lg border-gray-200 dark:border-gray-600 focus:border-[#3a5b22] focus:ring-[#3a5b22] pl-10 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                       required
                     />
                     <button
@@ -134,7 +133,7 @@ export default function SignupForm() {
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -155,11 +154,11 @@ export default function SignupForm() {
                       value="user"
                       checked={formData.role === "user"}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#3a5b22] border-gray-300 focus:ring-[#3a5b22]"
+                      className="w-4 h-4 text-[#3a5b22] border-gray-300 dark:border-gray-600 focus:ring-[#3a5b22] dark:bg-gray-700"
                     />
                     <label
                       htmlFor="user"
-                      className="ml-2 text-sm font-medium text-gray-700"
+                      className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-200"
                     >
                       Register as User
                     </label>
@@ -173,11 +172,11 @@ export default function SignupForm() {
                       value="author"
                       checked={formData.role === "author"}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#3a5b22] border-gray-300 focus:ring-[#3a5b22]"
+                      className="w-4 h-4 text-[#3a5b22] border-gray-300 dark:border-gray-600 focus:ring-[#3a5b22] dark:bg-gray-700"
                     />
                     <label
                       htmlFor="author"
-                      className="ml-2 text-sm font-medium text-gray-700"
+                      className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-200"
                     >
                       Register as Author
                     </label>
@@ -188,12 +187,15 @@ export default function SignupForm() {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="terms"
-                    className="rounded border-gray-300 text-[#3a5b22] focus:ring-[#3a5b22]"
+                    className="rounded border-gray-300 dark:border-gray-600 text-[#3a5b22] focus:ring-[#3a5b22] data-[state=checked]:bg-[#3a5b22] data-[state=checked]:border-[#3a5b22]"
                     required
                   />
-                  <label htmlFor="terms" className="text-sm text-gray-600">
+                  <label
+                    htmlFor="terms"
+                    className="text-sm text-gray-600 dark:text-gray-300"
+                  >
                     I agree to the{" "}
-                    <span className="text-[#3a5b22] hover:underline cursor-pointer">
+                    <span className="text-[#3a5b22] dark:text-[#4a6b32] hover:underline cursor-pointer">
                       terms & policy
                     </span>
                   </label>
@@ -203,7 +205,7 @@ export default function SignupForm() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11 bg-[#3a5b22] hover:bg-[#2e4a1b] rounded-lg text-sm font-semibold font-serif tracking-wide"
+                  className="w-full h-11 bg-[#3a5b22] hover:bg-[#2e4a1b] dark:bg-[#4a6b32] dark:hover:bg-[#3a5b22] rounded-lg text-sm font-semibold font-serif tracking-wide text-white"
                 >
                   {loading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -213,9 +215,9 @@ export default function SignupForm() {
 
                 {/* Separator */}
                 <div className="relative flex items-center py-4">
-                  <Separator className="w-full" />
-                  <div className="absolute left-1/2 transform -translate-x-1/2 px-4 bg-white">
-                    <span className="text-sm text-gray-500 font-medium">
+                  <Separator className="w-full dark:bg-gray-600" />
+                  <div className="absolute left-1/2 transform -translate-x-1/2 px-4 bg-white dark:bg-gray-800">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Or continue with
                     </span>
                   </div>
@@ -226,7 +228,7 @@ export default function SignupForm() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-serif text-gray-700 border-gray-300"
+                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-serif text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
                     <img
                       className="w-6 h-6 mr-2.5"
@@ -239,7 +241,7 @@ export default function SignupForm() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-serif text-gray-700 border-gray-300"
+                    className="flex-1 h-auto py-1 px-5 rounded-lg text-sm font-medium font-serif text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
                     <img
                       className="w-6 h-6 mr-2.5"
@@ -252,11 +254,11 @@ export default function SignupForm() {
 
                 {/* Sign in link */}
                 <div className="text-center mt-6">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     Have an account?{" "}
                     <Link
                       href="/login"
-                      className="text-[#3a5b22] font-medium hover:underline"
+                      className="text-[#3a5b22] dark:text-[#4a6b32] font-medium hover:underline"
                     >
                       Sign In
                     </Link>

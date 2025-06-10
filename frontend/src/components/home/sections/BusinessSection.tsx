@@ -2,7 +2,7 @@
 import { useContext } from "react";
 import { ThemeContext } from "@/context/themeContext";
 import { CalendarIcon } from "lucide-react";
-import { Advertisement } from "../advertisements/Advertisement";
+import { Advertisement } from "../Advertisement";
 import Link from "next/link";
 
 interface BusinessArticle {

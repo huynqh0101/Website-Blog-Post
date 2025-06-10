@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import ArticleDetail from "@/components/articles/ArticleDetail";
 import { StrapiArticle } from "@/types/strapi-response";
 import { articleService } from "@/services/articleService";
-import { Advertisement } from "@/components/home/advertisements/Advertisement";
+import { Advertisement } from "@/components/home/Advertisement";
 import BannerSlider from "@/components/home/BannerSlider";
 export async function generateMetadata({
   params,

@@ -2,8 +2,8 @@
 import BlogList from "@/components/blogs/BlogList";
 import { Suspense } from "react";
 import { TrendingTagsBar } from "@/components/articles/TrendingTagsBar";
-import { Advertisement } from "@/components/home/advertisements/Advertisement";
-import { NewsletterSection } from "@/components/home/newsletter/NewsletterSection";
+import { Advertisement } from "@/components/home/Advertisement";
+import { NewsletterSection } from "@/components/home/NewsletterSection";
 import FloatingActionButtons from "@/components/ui/FloatingActionButtons";
 import Link from "next/link";
 

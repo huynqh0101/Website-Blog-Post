@@ -2,13 +2,13 @@
 import { Suspense, useContext } from "react";
 import { ThemeContext } from "@/context/themeContext";
 import ArticleList from "@/components/articles/ArticleList";
-import { Advertisement } from "@/components/home/advertisements/Advertisement";
+import { Advertisement } from "@/components/home/Advertisement";
 import { ArticleHighlightSection } from "@/components/articles/ArticleHighlightSection";
 import { CategoryFilter } from "@/components/articles/CategoryFilter";
 import { TrendingTagsBar } from "@/components/articles/TrendingTagsBar";
 import { ArticlesSidebar } from "@/components/articles/ArticlesSidebar";
 import { FeaturedArticlesCarousel } from "@/components/articles/FeaturedArticlesCarousel";
-import { NewsletterSection } from "@/components/home/newsletter/NewsletterSection";
+import { NewsletterSection } from "@/components/home/NewsletterSection";
 import FloatingActionButtons from "@/components/ui/FloatingActionButtons";
 
 export default function ArticlesPage() {
